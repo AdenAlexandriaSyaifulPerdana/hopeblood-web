@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\Auth\LoginRequest;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -13,32 +14,33 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    public function store(Request $request)
+    public function store(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $request->authenticate();
+        $request->session()->regenerate();
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            $user = Auth::user();
+        $user = Auth::user();
 
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->role === 'pendonor') {
-                return redirect()->route('pendonor.dashboard');
-            } elseif ($user->role === 'penerima') {
-                return redirect()->route('penerima.dashboard');
-            }
-
-            return redirect()->route('home');
+        // Wajib isi biodata dulu
+        if (
+            empty($user->nama_lengkap) ||
+            empty($user->usia) ||
+            empty($user->alamat) ||
+            empty($user->golongan_darah)
+        ) {
+            return redirect()->route('complete.profile');
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ]);
+        // Redirect sesuai role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'pendonor') {
+            return redirect()->route('pendonor.dashboard');
+        } else {
+            return redirect()->route('penerima.dashboard');
+        }
     }
+
 
     public function destroy(Request $request)
     {

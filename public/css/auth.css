@@ -1,0 +1,118 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Background */
+body {
+    background: linear-gradient(135deg, #b30000, #ff4d4d);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Container */
+.register-container {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* Heading */
+.form-box h1 {
+    color: #b30000;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.form-box h2 {
+    color: #333;
+    font-size: 22px;
+    margin-bottom: 25px;
+}
+
+/* Label dan Input */
+label {
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 14px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: border 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: #b30000;
+    outline: none;
+}
+
+/* Button */
+.btn-register {
+    width: 100%;
+    background: #b30000;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.btn-register:hover {
+    background: #e60000;
+}
+
+/* Error Alert */
+.alert {
+    background: #ffe5e5;
+    color: #b30000;
+    border: 1px solid #ff9999;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+/* Link */
+.login-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #b30000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.input-error {
+    border-color: #dc2626 !important; /* merah */
+}
+
+.error-text {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 4px;
+}

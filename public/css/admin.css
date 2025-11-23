@@ -1,0 +1,131 @@
+/* 🎨 Tema Utama HopeBlood */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #fff5f5;
+    color: #333;
+    margin: 0;
+    padding: 30px;
+}
+
+h1 {
+    color: #c1121f;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #c1121f;
+}
+
+p {
+    text-align: center;
+    font-size: 18px;
+}
+
+/* 🔘 Tombol */
+.btn, .btn-edit, .btn-delete, .btn-logout {
+    display: inline-block;
+    padding: 8px 14px;
+    margin: 5px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.btn {
+    background-color: #d62828;
+    color: #fff;
+}
+
+.btn:hover {
+    background-color: #9d0208;
+}
+
+.btn-edit {
+    background-color: #ffba08;
+    color: #333;
+}
+
+.btn-edit:hover {
+    background-color: #f48c06;
+    color: white;
+}
+
+.btn-delete {
+    background-color: #9d0208;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #6a040f;
+}
+
+.btn-logout {
+    background-color: #6a040f;
+    color: white;
+    margin-top: 20px;
+    display: block;
+    width: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.btn-logout:hover {
+    background-color: #9d0208;
+}
+
+/* 🧾 Tabel Data */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+th {
+    background-color: #c1121f;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background-color: #ffe5e5;
+}
+
+/* ✅ Alert sukses */
+.alert {
+    background-color: #f7d7da;
+    color: #7a0a0a;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* 📱 Responsif */
+@media (max-width: 768px) {
+    table {
+        font-size: 13px;
+    }
+
+    .btn, .btn-edit, .btn-delete {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    body {
+        padding: 15px;
+    }
+}
