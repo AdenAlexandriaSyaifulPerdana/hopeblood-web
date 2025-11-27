@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\PenerimaController;
+use App\Http\Controllers\PendonorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +65,18 @@ Route::middleware(['auth', 'role:pendonor', 'checkprofile'])->group(function () 
     Route::get('/pendonor/dashboard', function () {
         return view('pendonor.dashboard');
     })->name('pendonor.dashboard');
+
+
+    Route::get('/pendonor/permintaan', [PendonorController::class, 'lihatPermintaan'])
+        ->name('pendonor.permintaan');
+
+
+    // Konfirmasi donor
+    Route::post('/pendonor/konfirmasi', 
+    [PendonorController::class, 'konfirmasiDonor']
+)->name('pendonor.konfirmasi');
 });
+
 
 
 /*
@@ -75,6 +88,21 @@ Route::middleware(['auth', 'role:penerima', 'checkprofile'])->group(function () 
     Route::get('/penerima/dashboard', function () {
         return view('penerima.dashboard');
     })->name('penerima.dashboard');
+
+    // FORM PERMOHONAN
+    Route::get('/penerima/permohonan/buat', 
+        [PenerimaController::class, 'formPermohonan']
+    )->name('penerima.permohonan.form');
+
+    // SIMPAN PERMOHONAN
+    Route::post('/penerima/permohonan/kirim', 
+        [PenerimaController::class, 'kirimPermohonan']
+    )->name('penerima.permohonan.kirim');
+
+    // STATUS PERMOHONAN
+    Route::get('/penerima/permohonan/status', 
+        [PenerimaController::class, 'statusPermohonan']
+    )->name('penerima.permohonan.status');
 });
 
 

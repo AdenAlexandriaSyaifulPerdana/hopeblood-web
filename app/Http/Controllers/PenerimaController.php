@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\penerima\PermohonanDarah;
+
+class PenerimaController extends Controller
+{
+    public function formPermohonan()
+    {
+        return view('penerima.form_permohonan');
+    }
+
+    public function kirimPermohonan(Request $request)
+    {
+        $request->validate([
+            'golongan_darah' => 'required',
+            'lokasi_rumah_sakit' => 'required',
+            'keterangan' => 'nullable'
+        ]);
+
+        PermohonanDarah::create([
+            'id_penerima' => auth()->id(),
+            'golongan_darah' => $request->golongan_darah,
+            'lokasi_rumah_sakit' => $request->lokasi_rumah_sakit,
+            'keterangan' => $request->keterangan,
+            'status' => 'menunggu',
+        ]);
+
+        return redirect()->route('penerima.permohonan.status')
+            ->with('success', 'Permohonan darah berhasil dikirim!');
+    }
+
+    public function statusPermohonan()
+    {
+        $data = PermohonanDarah::where('id_penerima', auth()->id())->get();
+
+        return view('penerima.status_permohonan', compact('data'));
+    }
+}
