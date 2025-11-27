@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('patient_name')->nullable();
             $table->string('blood_type');
             $table->integer('amount'); // jumlah kantong
-            $table->foreignId('hospital_id')->constrained()->onDelete('cascade');
+            $table->foreignId('hospital_id')
+                  ->constrained('hospitals')
+                  ->OnDelete('cascade');
             $table->enum('status',['waiting','processing','matched','fulfilled','rejected'])->default('waiting');
             $table->text('notes')->nullable();
             $table->timestamps();

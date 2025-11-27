@@ -15,6 +15,9 @@ class PendonorSeeder extends Seeder
             'email' => 'tia@gmail.com',
             'password' => Hash::make('tia123'),
             'role' => 'pendonor',
+            'usia' => '20',
+            'alamat' => 'Banyuwangi',
+            'golongan_darah' => 'O'
         ]);
     }
 }

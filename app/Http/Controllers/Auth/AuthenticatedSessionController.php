@@ -27,9 +27,7 @@ class AuthenticatedSessionController extends Controller
             empty($user->usia) ||
             empty($user->alamat) ||
             empty($user->golongan_darah)
-        ) {
-            return redirect()->route('complete.profile');
-        }
+        )
 
         // Redirect sesuai role
         if ($user->role === 'admin') {

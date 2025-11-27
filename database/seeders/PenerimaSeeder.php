@@ -15,6 +15,9 @@ class PenerimaSeeder extends Seeder
             'email' => 'wulan@gmail.com',
             'password' => Hash::make('wulan123'),
             'role' => 'penerima',
+            'usia' => '20',
+            'alamat' => 'Banyuwangi',
+            'golongan_darah' => 'O'
         ]);
     }
 }

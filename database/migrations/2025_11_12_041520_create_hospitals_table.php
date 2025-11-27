@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hospitals', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('address')->nullable();
-            $table->string('phone')->nullable();
-            $table->decimal('lat', 10, 7)->nullable();
-            $table->decimal('lng', 10, 7)->nullable();
-            $table->timestamps();
-});
-
+    Schema::create('hospitals', function (Blueprint $table) {
+        $table->id();
+        $table->string('nama_rumah_sakit');
+        $table->string('alamat');
+        $table->string('jam_operasional');
+        $table->string('nomer_hp');
+        $table->timestamps();
+        });
     }
 
     /**
