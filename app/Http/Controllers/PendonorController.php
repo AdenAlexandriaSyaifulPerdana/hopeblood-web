@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\penerima\PermohonanDarah;
 use App\Models\pendonor\KonfirmasiDonor;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Hospital;
 
 class PendonorController extends Controller
 {
     /**
-     * Menampilkan daftar permintaan darah
-     * yang cocok dengan golongan pendonor.
+     * Menampilkan daftar permintaan darah yang cocok dengan golongan pendonor.
      */
     public function lihatPermintaan()
     {
@@ -21,43 +21,54 @@ class PendonorController extends Controller
                 ->where('status', 'menunggu')
                 ->get();
 
-        return view('pendonor.permintaan', compact('data'));
+        // Ambil semua rumah sakit
+        $hospitals = Hospital::all();
+
+        return view('pendonor.permintaan', compact('data', 'hospitals'));
     }
 
     /**
      * Pendonor mengonfirmasi kesediaan donor.
+     * Status TIDAK mengubah permohonan — hanya buat konfirmasi saja.
      */
-  public function konfirmasiDonor(Request $request)
-{
-    $request->validate([
-        'id_permohonan' => 'required|exists:permohonan_darah,id',
-        'lokasi_donor'  => 'required',
-        'waktu_donor'   => 'required',
-    ]);
+    public function konfirmasiDonor(Request $request)
+    {
+        $request->validate([
+            'id_permohonan' => 'required|exists:permohonan_darah,id',
+            'lokasi_donor'  => 'required|exists:hospitals,id',
+            'tanggal_donor' => 'required|date|after_or_equal:today',
+            'waktu_donor'   => 'required|date_format:H:i',
+        ]);
 
-    // Cek apakah pendonor sudah pernah konfirmasi permohonan yang sama
-    $cek = KonfirmasiDonor::where('id_pendonor', Auth::id())
-            ->where('id_permohonan', $request->id_permohonan)
-            ->first();
+        // Ambil hospital berdasarkan id
+        $hospital = Hospital::findOrFail($request->lokasi_donor);
 
-    if ($cek) {
-        return back()->with('error', 'Anda sudah mengonfirmasi kesediaan untuk permohonan ini.');
+        // Parse jam operasional dan ubah '.' -> ':'
+        $parts = explode('-', $hospital->jam_operasional);
+        $open = isset($parts[0]) ? str_replace('.', ':', trim($parts[0])) : null;
+        $close = isset($parts[1]) ? str_replace('.', ':', trim($parts[1])) : null;
+
+        $waktu = $request->waktu_donor;
+
+        // Validasi jam donor dalam jam operasional RS
+        if ($open && $close) {
+            if ($waktu < $open || $waktu > $close) {
+                return back()
+                    ->withInput()
+                    ->with('error', "Jam donor harus antara $open - $close sesuai jam operasional {$hospital->nama_rumah_sakit}.");
+            }
+        }
+
+        // Simpan konfirmasi donor
+        KonfirmasiDonor::create([
+            'id_pendonor'   => auth()->id(),
+            'id_permohonan' => $request->id_permohonan,
+            'lokasi_donor'  => $hospital->id, // simpan ID saja agar mudah difilter admin RS
+            'tanggal_donor' => $request->tanggal_donor,
+            'waktu_donor'   => $waktu,
+            'status'        => 'menunggu konfirmasi rumah sakit',
+        ]);
+
+        return redirect()->back()->with('success', 'Kesediaan donor berhasil dikirim! Menunggu respon rumah sakit.');
     }
-
-    // Pecah datetime-local
-    $datetime = $request->waktu_donor;
-    $tanggal = date('Y-m-d', strtotime($datetime));
-    $waktu   = date('H:i:s', strtotime($datetime));
-
-    KonfirmasiDonor::create([
-        'id_pendonor'    => Auth::id(),
-        'id_permohonan'  => $request->id_permohonan,
-        'lokasi_donor'   => $request->lokasi_donor,
-        'tanggal_donor'  => $tanggal,
-        'waktu_donor'    => $waktu,
-        'status'         => 'menunggu konfirmasi rumah sakit',
-    ]);
-
-    return back()->with('success', 'Konfirmasi donor berhasil dikirim!');
-}
 }

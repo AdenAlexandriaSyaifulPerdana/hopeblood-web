@@ -8,6 +8,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\PenerimaController;
 use App\Http\Controllers\PendonorController;
+use App\Http\Controllers\HospitalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
 | ADMIN
 |--------------------------------------------------------------------------
 */
+
 Route::middleware(['auth', 'role:admin', 'checkprofile'])->group(function () {
 
     Route::get('/admin/dashboard', [UserController::class, 'index'])
@@ -53,7 +55,46 @@ Route::middleware(['auth', 'role:admin', 'checkprofile'])->group(function () {
     Route::put('/admin/pendonor/{id}', [UserController::class, 'pendonorUpdate'])->name('admin.pendonor.update');
     Route::delete('/admin/pendonor/{id}', [UserController::class, 'pendonorDestroy'])->name('admin.pendonor.destroy');
 
+    // CRUD Penerima
+    Route::get('/admin/penerima', [UserController::class, 'penerimaIndex'])->name('admin.penerima.index');
+    Route::get('/admin/penerima/create', [UserController::class, 'penerimaCreate'])->name('admin.penerima.create');
+    Route::post('/admin/penerima', [UserController::class, 'penerimaStore'])->name('admin.penerima.store');
+    Route::get('/admin/penerima/{id}/edit', [UserController::class, 'penerimaEdit'])->name('admin.penerima.edit');
+    Route::put('/admin/penerima/{id}', [UserController::class, 'penerimaUpdate'])->name('admin.penerima.update');
+    Route::delete('/admin/penerima/{id}', [UserController::class, 'penerimaDestroy'])->name('admin.penerima.destroy');
+
+    // ✅ CRUD Rumah Sakit
+    Route::get('/admin/hospitals', [HospitalController::class, 'index'])->name('admin.hospitals.index');
+    Route::get('/admin/hospitals/create', [HospitalController::class, 'create'])->name('admin.hospitals.create');
+    Route::post('/admin/hospitals', [HospitalController::class, 'store'])->name('admin.hospitals.store');
+    Route::get('/admin/hospitals/{id}/edit', [HospitalController::class, 'edit'])->name('admin.hospitals.edit');
+    Route::put('/admin/hospitals/{id}', [HospitalController::class, 'update'])->name('admin.hospitals.update');
+    Route::delete('/admin/hospitals/{id}', [HospitalController::class, 'destroy'])->name('admin.hospitals.destroy');
+
+    // PERMOHONAN DARAH ADMIN
+    Route::get('/admin/permohonan', [UserController::class, 'permohonanIndex'])
+        ->name('admin.permohonan.index');
+
+    Route::get('/admin/permohonan/{id}', [UserController::class, 'permohonanShow'])
+        ->name('admin.permohonan.show');
+
+    Route::put('/admin/permohonan/{id}/status', [UserController::class, 'permohonanUpdateStatus'])
+        ->name('admin.permohonan.status');
+
+    // Konfirmasi Donor (khusus admin rumah sakit)
+    Route::get('/admin/konfirmasi-donor', [UserController::class, 'konfirmasiDonorIndex'])
+        ->name('admin.konfirmasi.index');
+
+    Route::put('/admin/konfirmasi-donor/{id}/acc', [UserController::class, 'konfirmasiDonorAcc'])
+        ->name('admin.konfirmasi.acc');
+
+    Route::put('/admin/konfirmasi-donor/{id}/reject', [UserController::class, 'konfirmasiDonorReject'])
+        ->name('admin.konfirmasi.reject');
+
+
+
 });
+
 
 
 /*
@@ -72,7 +113,7 @@ Route::middleware(['auth', 'role:pendonor', 'checkprofile'])->group(function () 
 
 
     // Konfirmasi donor
-    Route::post('/pendonor/konfirmasi', 
+    Route::post('/pendonor/konfirmasi',
     [PendonorController::class, 'konfirmasiDonor']
 )->name('pendonor.konfirmasi');
 });
@@ -90,17 +131,17 @@ Route::middleware(['auth', 'role:penerima', 'checkprofile'])->group(function () 
     })->name('penerima.dashboard');
 
     // FORM PERMOHONAN
-    Route::get('/penerima/permohonan/buat', 
+    Route::get('/penerima/permohonan/buat',
         [PenerimaController::class, 'formPermohonan']
     )->name('penerima.permohonan.form');
 
     // SIMPAN PERMOHONAN
-    Route::post('/penerima/permohonan/kirim', 
+    Route::post('/penerima/permohonan/kirim',
         [PenerimaController::class, 'kirimPermohonan']
     )->name('penerima.permohonan.kirim');
 
     // STATUS PERMOHONAN
-    Route::get('/penerima/permohonan/status', 
+    Route::get('/penerima/permohonan/status',
         [PenerimaController::class, 'statusPermohonan']
     )->name('penerima.permohonan.status');
 });

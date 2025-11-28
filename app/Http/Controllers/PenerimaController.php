@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\penerima\PermohonanDarah;
+use App\Models\Hospital;
 
 class PenerimaController extends Controller
 {
     public function formPermohonan()
     {
-        return view('penerima.form_permohonan');
+        $hospitals = Hospital::all();
+        return view('penerima.form_permohonan', compact('hospitals'));
     }
+
 
     public function kirimPermohonan(Request $request)
     {

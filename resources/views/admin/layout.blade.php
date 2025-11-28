@@ -54,28 +54,22 @@
                 </li>
 
                 <li>
-                    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-red-100">
+                    <a href="{{ route('admin.penerima.index') }}" class="block px-4 py-3 rounded-lg hover:bg-red-100">
                         🩸 Data Penerima Darah
                     </a>
                 </li>
 
                 <li>
-                    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-red-100">
-                        🔄 Permintaan Darah
+                    <a href="{{ route('admin.hospitals.index') }}" class="block px-4 py-3 rounded-lg hover:bg-red-100">
+                         Data Rumah Sakit
                     </a>
                 </li>
 
                 <li class="pt-2 text-gray-500 uppercase text-xs font-bold">Operasional</li>
 
                 <li>
-                    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-red-100">
-                        📅 Jadwal Donor
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-red-100">
-                        📘 Riwayat Donor
+                    <a href="{{ route('admin.permohonan.index') }}" class="block px-4 py-3 rounded-lg hover:bg-red-100">
+                        Permintaan Darah
                     </a>
                 </li>
 

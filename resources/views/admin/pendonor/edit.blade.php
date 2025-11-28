@@ -1,18 +1,30 @@
 @extends('admin.layout')
 
 @section('content')
-<h2>Edit Pendonor</h2>
+<div class="bg-white shadow-lg rounded-xl p-6 max-w-xl mx-auto">
 
-<form action="{{ route('admin.pendonor.update', $pendonor->id) }}" method="POST">
-    @csrf
-    @method('PUT')
+    <h2 class="text-2xl font-bold mb-6">Edit Pendonor</h2>
 
-    <label>Nama</label>
-    <input type="text" name="name" class="form-control" value="{{ $pendonor->name }}">
+    <form action="{{ route('admin.pendonor.update', $pendonor->id) }}" method="POST">
+        @csrf
+        @method('PUT')
 
-    <label>Email</label>
-    <input type="email" name="email" class="form-control" value="{{ $pendonor->email }}">
+        <label class="block mb-2 font-semibold">Nama</label>
+        <input type="text" name="name"
+               value="{{ $pendonor->name }}"
+               class="w-full border rounded-lg px-4 py-2 mb-4"
+               required>
 
-    <button class="btn btn-primary mt-3">Update</button>
-</form>
+        <label class="block mb-2 font-semibold">Email</label>
+        <input type="email" name="email"
+               value="{{ $pendonor->email }}"
+               class="w-full border rounded-lg px-4 py-2 mb-4"
+               required>
+
+        <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+            Update
+        </button>
+    </form>
+
+</div>
 @endsection

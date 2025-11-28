@@ -15,7 +15,16 @@
     <br><br>
 
     <label>Lokasi Rumah Sakit:</label><br>
-    <input type="text" name="lokasi_rumah_sakit" required>
+    <select name="lokasi_rumah_sakit" required>
+        <option value="">-- Pilih Rumah Sakit --</option>
+        @foreach($hospitals as $h)
+            <option value="{{ $h->nama_rumah_sakit }}">
+                {{ $h->nama_rumah_sakit }} — {{ $h->alamat }}
+            </option>
+        @endforeach
+    </select>
+    <br><br>
+
 
     <br><br>
 

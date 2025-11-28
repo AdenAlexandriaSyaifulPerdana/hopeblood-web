@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\Hospital;
 use Illuminate\Database\Seeder;
-use App\Models\Hospitals;
 
-class HospitalsSeeder extends Seeder
+class HospitalSeeder extends Seeder
 {
     public function run(): void
     {
-        Hospitals::insert([
+        Hospital::insert([
             [
                 'nama_rumah_sakit' => 'UDD PMI Kabupaten Jember',
                 'alamat' => 'Jl. Srikoyo No. 115, Patrang, Jember',

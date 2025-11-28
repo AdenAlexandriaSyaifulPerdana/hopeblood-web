@@ -1,20 +1,32 @@
 @extends('admin.layout')
 
 @section('content')
-<h2>Tambah Pendonor</h2>
+<div class="bg-white shadow-lg rounded-xl p-6 max-w-xl mx-auto">
 
-<form action="{{ route('admin.pendonor.store') }}" method="POST">
-    @csrf
+    <h2 class="text-2xl font-bold mb-6">Tambah Pendonor</h2>
 
-    <label>Nama</label>
-    <input type="text" name="name" class="form-control">
+    <form action="{{ route('admin.pendonor.store') }}" method="POST">
+        @csrf
 
-    <label>Email</label>
-    <input type="email" name="email" class="form-control">
+        <label class="block mb-2 font-semibold">Nama</label>
+        <input type="text" name="name"
+               class="w-full border rounded-lg px-4 py-2 mb-4"
+               required>
 
-    <label>Password</label>
-    <input type="password" name="password" class="form-control">
+        <label class="block mb-2 font-semibold">Email</label>
+        <input type="email" name="email"
+               class="w-full border rounded-lg px-4 py-2 mb-4"
+               required>
 
-    <button class="btn btn-primary mt-3">Simpan</button>
-</form>
+        <label class="block mb-2 font-semibold">Password</label>
+        <input type="password" name="password"
+               class="w-full border rounded-lg px-4 py-2 mb-4"
+               required>
+
+        <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+            Simpan
+        </button>
+    </form>
+
+</div>
 @endsection

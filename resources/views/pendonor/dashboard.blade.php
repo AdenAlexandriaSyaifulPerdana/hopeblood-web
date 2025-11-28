@@ -28,7 +28,7 @@
         line-height: 1.6;
         font-weight: 500;
     ">
-        Halo, <strong style="color:#b31c1c">{{ Auth::user()->name }}</strong> 👋  
+        Halo, <strong style="color:#b31c1c">{{ Auth::user()->name }}</strong> 👋
         <br>Terima kasih telah menjadi bagian dari penyelamat nyawa ❤️
     </p>
 
@@ -55,7 +55,7 @@
             🔍 Lihat Permintaan Darah
         </a>
 
-        {{-- Tombol Riwayat --}}
+        {{-- Tombol Riwayat
         <div style="
                 padding: 18px 22px;
                 background: #ff8c8c;
@@ -68,9 +68,9 @@
                 cursor: not-allowed;
                 box-shadow: 0 6px 20px rgba(255,140,140,0.25);
             ">
-            🕒 Riwayat Konfirmasi Donor 
+            🕒 Riwayat Konfirmasi Donor
             <span style="font-size:14px;">(Coming Soon)</span>
-        </div>
+        </div> --}}
 
         {{-- Logout --}}
         <form action="{{ route('logout') }}" method="POST">
@@ -98,4 +98,3 @@
     </div>
 
 </div>
- 
