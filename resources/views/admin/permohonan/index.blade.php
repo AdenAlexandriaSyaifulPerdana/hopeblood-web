@@ -12,7 +12,11 @@
                 <th>Golongan Darah</th>
                 <th>Rumah Sakit</th>
                 <th>Status</th>
-                <th>Aksi</th>
+
+                {{-- Hanya tampilkan kolom Aksi jika admin punya wewenang --}}
+                @if ($permohonan->where('lokasi_rumah_sakit', Auth::user()->hospital_id)->count() > 0)
+                    <th>Aksi</th>
+                @endif
             </tr>
         </thead>
 
@@ -32,10 +36,14 @@
                         <span class="badge bg-danger">Rejected</span>
                     @endif
                 </td>
+
+                {{-- Aksi hanya untuk permohonan yang RS-nya cocok --}}
+                @if (Auth::user()->hospital_id == $p->lokasi_rumah_sakit)
                 <td class="d-flex">
 
                     {{-- Tombol ACC --}}
-                    <form action="{{ route('admin.permohonan.status', $p->id) }}" method="POST" class="me-2">
+                    <form action="{{ route('admin.permohonan.status', $p->id) }}"
+                          method="POST" class="me-2">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="status" value="acc">
@@ -43,7 +51,8 @@
                     </form>
 
                     {{-- Tombol Reject --}}
-                    <form action="{{ route('admin.permohonan.status', $p->id) }}" method="POST">
+                    <form action="{{ route('admin.permohonan.status', $p->id) }}"
+                          method="POST">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="status" value="reject">
@@ -51,6 +60,8 @@
                     </form>
 
                 </td>
+                @endif
+
             </tr>
             @empty
             <tr>

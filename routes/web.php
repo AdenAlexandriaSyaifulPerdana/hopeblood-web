@@ -110,6 +110,13 @@ Route::middleware(['auth', 'role:pendonor', 'checkprofile'])->group(function () 
     Route::get('/pendonor/riwayat', [PendonorController::class, 'riwayatDonor'])
         ->name('pendonor.riwayat');
 
+    Route::get('/pendonor/riwayat',
+        [PendonorController::class, 'riwayatDonor'])
+        ->name('pendonor.riwayat');
+
+    Route::get('/pendonor/download-surat/{id}',
+        [PendonorController::class, 'downloadSurat'])
+        ->name('pendonor.downloadSurat');
 
 
     // Konfirmasi donor

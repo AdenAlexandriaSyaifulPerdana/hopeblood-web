@@ -175,43 +175,49 @@ class UserController extends Controller
                          ->with('success', 'Penerima berhasil diperbarui.');
     }
 
-    public function konfirmasiDonorIndex()
-    {
-        $adminHospitalId = Auth::user()->hospital_id;
+public function konfirmasiDonorIndex()
+{
+    // Ambil ID rumah sakit admin login
+    $adminHospitalId = Auth::user()->hospital_id;
 
-        $konfirmasi = KonfirmasiDonor::where('lokasi_donor', $adminHospitalId)
-                        ->where('status', 'menunggu konfirmasi rumah sakit')
-                        ->get();
+    // 🔥 Hanya ambil konfirmasi di rumah sakit miliknya
+    $konfirmasi = KonfirmasiDonor::where('lokasi_donor', $adminHospitalId)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
-        return view('admin.konfirmasi.index', compact('konfirmasi'));
-    }
+    return view('admin.konfirmasi.index', compact('konfirmasi'));
+}
 
 
-    // Method accept
     public function konfirmasiDonorAcc($id)
     {
-        $konfirmasi = KonfirmasiDonor::findOrFail($id);
-        $konfirmasi->status = 'disetujui';
-        $konfirmasi->save();
+        $permohonan = PermohonanDarah::findOrFail($id);
 
-        PermohonanDarah::where('id', $konfirmasi->id_permohonan)
-            ->update(['status' => 'sedang dalam proses']);
+        if (Auth::user()->hospital_id != $permohonan->lokasi_rumah_sakit) {
+            return redirect()->back()->with('error', 'Anda tidak berwenang melakukan ACC pada permohonan ini.');
+        }
 
-        return back()->with('success', 'Donor disetujui.');
+        $permohonan->status = 'ACC';
+        $permohonan->save();
+
+        return back()->with('success', 'Permohonan berhasil di-ACC');
     }
 
-    // Method reject
     public function konfirmasiDonorReject($id)
     {
-        $konfirmasi = KonfirmasiDonor::findOrFail($id);
-        $konfirmasi->status = 'ditolak';
-        $konfirmasi->save();
+        $permohonan = PermohonanDarah::findOrFail($id);
 
-        PermohonanDarah::where('id', $konfirmasi->id_permohonan)
-            ->update(['status' => 'menunggu']);
+        if (Auth::user()->hospital_id != $permohonan->lokasi_rumah_sakit) {
+            return redirect()->back()->with('error', 'Anda tidak berwenang melakukan Reject.');
+        }
 
-        return back()->with('success', 'Donor ditolak.');
+        $permohonan->status = 'Reject';
+        $permohonan->save();
+
+        return back()->with('success', 'Permohonan berhasil ditolak');
     }
+
+
 
 
     // HAPUS PENERIMA
@@ -229,12 +235,36 @@ class UserController extends Controller
 
     public function permohonanIndex()
     {
-        $permohonan = PermohonanDarah::with(['user', 'hospital'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $adminHospitalId = Auth::user()->hospital_id;
+
+        // Hanya ambil permohonan untuk rumah sakit admin ini
+        $permohonan = PermohonanDarah::where('lokasi_rumah_sakit', $adminHospitalId)
+                        ->with(['user', 'hospital'])
+                        ->get();
 
         return view('admin.permohonan.index', compact('permohonan'));
     }
+
+    public function permohonanUpdateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:acc,reject'
+        ]);
+
+        // Update status permohonan darah
+        $permohonan = PermohonanDarah::findOrFail($id);
+        $permohonan->status = $request->status;
+        $permohonan->save();
+
+        // Update status konfirmasi pendonor yang terkait
+        KonfirmasiDonor::where('id_permohonan', $id)->update([
+            'status' => $request->status === 'acc' ? 'disetujui' : 'ditolak'
+        ]);
+
+        return redirect()->back()->with('success', 'Status permohonan berhasil diperbarui.');
+    }
+
+
 
     public function permohonanShow($id)
     {
@@ -243,18 +273,21 @@ class UserController extends Controller
         return view('admin.permohonan.show', compact('permohonan'));
     }
 
-    public function permohonanUpdateStatus(Request $request, $id)
+    public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => ['required', 'in:acc,reject'],
-        ]);
-
         $permohonan = PermohonanDarah::findOrFail($id);
         $permohonan->status = $request->status;
         $permohonan->save();
 
-        return redirect()->route('admin.permohonan.index')
-            ->with('success', 'Status permohonan berhasil diperbarui.');
+        // CARI KONFIRMASI DONOR YANG BERHUBUNGAN
+        KonfirmasiDonor::where('id_permohonan', $id)
+            ->update([
+                'status' => $request->status == 'acc'
+                            ? 'disetujui'
+                            : 'ditolak'
+            ]);
+
+        return back()->with('success', 'Status berhasil diperbarui.');
     }
 
 }

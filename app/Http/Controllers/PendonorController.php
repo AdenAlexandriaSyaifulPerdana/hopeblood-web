@@ -7,6 +7,7 @@ use App\Models\penerima\PermohonanDarah;
 use App\Models\pendonor\KonfirmasiDonor;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Hospital;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PendonorController extends Controller
 {
@@ -79,12 +80,25 @@ class PendonorController extends Controller
 
     public function riwayatDonor()
     {
-        $riwayat = KonfirmasiDonor::with(['permohonan', 'hospital'])
-                    ->where('id_pendonor', Auth::id())
-                    ->orderBy('created_at', 'desc')
+        $riwayat = KonfirmasiDonor::where('id_pendonor', Auth::id())
+                    ->with(['permohonan', 'hospital'])
                     ->get();
 
         return view('pendonor.riwayat', compact('riwayat'));
     }
 
+    public function downloadSurat($id)
+    {
+        $data = KonfirmasiDonor::where('id', $id)
+                ->where('id_pendonor', Auth::id())
+                ->with(['permohonan', 'hospital'])
+                ->firstOrFail();
+
+        if ($data->status !== 'disetujui') {
+            return back()->with('error', 'Belum bisa mendownload surat rujukan.');
+        }
+
+        $pdf = Pdf::loadView('pendonor.surat_rujukan', compact('data'));
+        return $pdf->download('surat_rujukan_'.$data->id.'.pdf');
+    }
 }
