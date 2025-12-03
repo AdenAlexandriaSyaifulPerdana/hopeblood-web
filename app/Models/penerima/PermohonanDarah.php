@@ -18,4 +18,19 @@ class PermohonanDarah extends Model
         'keterangan',
         'status',
     ];
+
+    public function konfirmasiPendonor()
+    {
+        return $this->hasMany(\App\Models\pendonor\KonfirmasiDonor::class, 'id_permohonan');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'id_penerima');
+    }
+
+    public function hospital()
+    {
+        return $this->belongsTo(\App\Models\Hospital::class, 'lokasi_rumah_sakit');
+    }
 }

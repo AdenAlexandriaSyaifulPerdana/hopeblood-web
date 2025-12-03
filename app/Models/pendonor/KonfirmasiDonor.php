@@ -16,4 +16,19 @@ class KonfirmasiDonor extends Model
         'waktu_donor',
         'status'
     ];
+
+    public function permohonan()
+    {
+        return $this->belongsTo(\App\Models\penerima\PermohonanDarah::class, 'id_permohonan');
+    }
+
+    public function hospital()
+    {
+        return $this->belongsTo(\App\Models\Hospital::class, 'lokasi_donor');
+    }
+
+    public function pendonor()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'id_pendonor');
+    }
 }

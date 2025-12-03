@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Models\pendonor\KonfirmasiDonor;
 use App\Models\penerima\PermohonanDarah;
 
@@ -176,42 +177,41 @@ class UserController extends Controller
 
     public function konfirmasiDonorIndex()
     {
-        $adminRS = auth()->user()->name; // nama admin = nama rumah sakit
+        $adminHospitalId = Auth::user()->hospital_id;
 
-        $konfirmasi = KonfirmasiDonor::where('lokasi_donor', $adminRS)
-            ->where('status', 'menunggu konfirmasi rumah sakit')
-            ->get();
+        $konfirmasi = KonfirmasiDonor::where('lokasi_donor', $adminHospitalId)
+                        ->where('status', 'menunggu konfirmasi rumah sakit')
+                        ->get();
 
         return view('admin.konfirmasi.index', compact('konfirmasi'));
     }
 
+
+    // Method accept
     public function konfirmasiDonorAcc($id)
     {
         $konfirmasi = KonfirmasiDonor::findOrFail($id);
+        $konfirmasi->status = 'disetujui';
+        $konfirmasi->save();
 
-        // ubah status konfirmasi
-        $konfirmasi->update(['status' => 'disetujui']);
-
-        // update permohonan darah jadi "sedang di proses"
         PermohonanDarah::where('id', $konfirmasi->id_permohonan)
-            ->update(['status' => 'sedang di proses']);
+            ->update(['status' => 'sedang dalam proses']);
 
-        return back()->with('success', 'Pendonor telah disetujui!');
+        return back()->with('success', 'Donor disetujui.');
     }
 
+    // Method reject
     public function konfirmasiDonorReject($id)
     {
         $konfirmasi = KonfirmasiDonor::findOrFail($id);
-
-        $konfirmasi->update(['status' => 'ditolak']);
+        $konfirmasi->status = 'ditolak';
+        $konfirmasi->save();
 
         PermohonanDarah::where('id', $konfirmasi->id_permohonan)
-            ->update(['status' => 'menunggu']); // dibuka lagi
+            ->update(['status' => 'menunggu']);
 
-        return back()->with('success', 'Konfirmasi donor ditolak!');
+        return back()->with('success', 'Donor ditolak.');
     }
-
-
 
 
     // HAPUS PENERIMA
@@ -229,27 +229,32 @@ class UserController extends Controller
 
     public function permohonanIndex()
     {
-        $permohonans = \App\Models\BloodRequest::with('pendonor')->latest()->get();
-        return view('admin.permohonan.index', compact('permohonans'));
+        $permohonan = PermohonanDarah::with(['user', 'hospital'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.permohonan.index', compact('permohonan'));
     }
 
     public function permohonanShow($id)
     {
-        $permohonan = \App\Models\BloodRequest::with('pendonor')->findOrFail($id);
+        $permohonan = PermohonanDarah::with(['user', 'hospital'])->findOrFail($id);
+
         return view('admin.permohonan.show', compact('permohonan'));
     }
 
     public function permohonanUpdateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required'
+            'status' => ['required', 'in:acc,reject'],
         ]);
 
-        $permohonan = \App\Models\BloodRequest::findOrFail($id);
+        $permohonan = PermohonanDarah::findOrFail($id);
         $permohonan->status = $request->status;
         $permohonan->save();
 
-        return back()->with('success', 'Status permohonan berhasil diperbarui');
+        return redirect()->route('admin.permohonan.index')
+            ->with('success', 'Status permohonan berhasil diperbarui.');
     }
 
 }

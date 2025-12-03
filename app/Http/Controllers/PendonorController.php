@@ -16,16 +16,21 @@ class PendonorController extends Controller
     public function lihatPermintaan()
     {
         $gol = Auth::user()->golongan_darah;
+        $pendonorId = Auth::id();
 
+        // Ambil daftar permohonan yg belum dikonfirmasi pendonor ini
         $data = PermohonanDarah::where('golongan_darah', $gol)
-                ->where('status', 'menunggu')
-                ->get();
+            ->where('status', 'menunggu')
+            ->whereDoesntHave('konfirmasiPendonor', function ($q) use ($pendonorId) {
+                $q->where('id_pendonor', $pendonorId);
+            })
+            ->get();
 
-        // Ambil semua rumah sakit
         $hospitals = Hospital::all();
 
         return view('pendonor.permintaan', compact('data', 'hospitals'));
     }
+
 
     /**
      * Pendonor mengonfirmasi kesediaan donor.
@@ -61,7 +66,7 @@ class PendonorController extends Controller
 
         // Simpan konfirmasi donor
         KonfirmasiDonor::create([
-            'id_pendonor'   => auth()->id(),
+            'id_pendonor'   => Auth::id(),
             'id_permohonan' => $request->id_permohonan,
             'lokasi_donor'  => $hospital->id, // simpan ID saja agar mudah difilter admin RS
             'tanggal_donor' => $request->tanggal_donor,
@@ -71,4 +76,15 @@ class PendonorController extends Controller
 
         return redirect()->back()->with('success', 'Kesediaan donor berhasil dikirim! Menunggu respon rumah sakit.');
     }
+
+    public function riwayatDonor()
+    {
+        $riwayat = KonfirmasiDonor::with(['permohonan', 'hospital'])
+                    ->where('id_pendonor', Auth::id())
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+        return view('pendonor.riwayat', compact('riwayat'));
+    }
+
 }

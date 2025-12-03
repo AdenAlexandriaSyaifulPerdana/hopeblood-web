@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\penerima\PermohonanDarah;
 use App\Models\Hospital;
+use Illuminate\Support\Facades\Auth;
 
 class PenerimaController extends Controller
 {
@@ -13,7 +14,6 @@ class PenerimaController extends Controller
         $hospitals = Hospital::all();
         return view('penerima.form_permohonan', compact('hospitals'));
     }
-
 
     public function kirimPermohonan(Request $request)
     {
@@ -24,7 +24,7 @@ class PenerimaController extends Controller
         ]);
 
         PermohonanDarah::create([
-            'id_penerima' => auth()->id(),
+            'id_penerima' => Auth::id(),   // ← aman, tidak error
             'golongan_darah' => $request->golongan_darah,
             'lokasi_rumah_sakit' => $request->lokasi_rumah_sakit,
             'keterangan' => $request->keterangan,
@@ -37,7 +37,7 @@ class PenerimaController extends Controller
 
     public function statusPermohonan()
     {
-        $data = PermohonanDarah::where('id_penerima', auth()->id())->get();
+        $data = PermohonanDarah::where('id_penerima', Auth::id())->get();
 
         return view('penerima.status_permohonan', compact('data'));
     }

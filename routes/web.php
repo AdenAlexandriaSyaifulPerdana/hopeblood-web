@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\PenerimaController;
 use App\Http\Controllers\PendonorController;
 use App\Http\Controllers\HospitalController;
+use App\Http\Controllers\AdminRSController;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,12 +91,7 @@ Route::middleware(['auth', 'role:admin', 'checkprofile'])->group(function () {
 
     Route::put('/admin/konfirmasi-donor/{id}/reject', [UserController::class, 'konfirmasiDonorReject'])
         ->name('admin.konfirmasi.reject');
-
-
-
 });
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +106,10 @@ Route::middleware(['auth', 'role:pendonor', 'checkprofile'])->group(function () 
 
     Route::get('/pendonor/permintaan', [PendonorController::class, 'lihatPermintaan'])
         ->name('pendonor.permintaan');
+
+    Route::get('/pendonor/riwayat', [PendonorController::class, 'riwayatDonor'])
+        ->name('pendonor.riwayat');
+
 
 
     // Konfirmasi donor

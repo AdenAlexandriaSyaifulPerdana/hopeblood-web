@@ -1,34 +1,63 @@
 @extends('admin.layout')
 
 @section('content')
-<h1 class="text-2xl font-bold mb-4">Daftar Permintaan Darah</h1>
+<div class="container mt-4">
+    <h3>Daftar Permohonan Darah</h3>
 
-<table class="table-auto w-full border">
-    <thead>
-        <tr class="bg-gray-200">
-            <th class="px-4 py-2">ID</th>
-            <th class="px-4 py-2">Nama Penerima</th>
-            <th class="px-4 py-2">Golongan Darah</th>
-            <th class="px-4 py-2">Status</th>
-            <th class="px-4 py-2">Aksi</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach ($permohonans as $p)
+    <table class="table table-bordered mt-3">
+        <thead>
             <tr>
-                <td class="px-4 py-2">{{ $p->id }}</td>
-                <td class="px-4 py-2">{{ $p->nama }}</td>
-                <td class="px-4 py-2">{{ $p->golongan_darah }}</td>
-                <td class="px-4 py-2">{{ $p->status }}</td>
-                <td class="px-4 py-2">
-                    <a href="{{ route('admin.permohonan.show', $p->id) }}"
-                       class="text-blue-600 hover:underline">
-                        Detail
-                    </a>
+                <th>No</th>
+                <th>Nama Penerima</th>
+                <th>Golongan Darah</th>
+                <th>Rumah Sakit</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse ($permohonan as $p)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $p->user->name }}</td>
+                <td>{{ $p->golongan_darah }}</td>
+                <td>{{ $p->hospital->nama_rumah_sakit ?? '-' }}</td>
+                <td>
+                    @if ($p->status == 'pending')
+                        <span class="badge bg-warning">Pending</span>
+                    @elseif($p->status == 'acc')
+                        <span class="badge bg-success">ACC</span>
+                    @else
+                        <span class="badge bg-danger">Rejected</span>
+                    @endif
+                </td>
+                <td class="d-flex">
+
+                    {{-- Tombol ACC --}}
+                    <form action="{{ route('admin.permohonan.status', $p->id) }}" method="POST" class="me-2">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="status" value="acc">
+                        <button class="btn btn-success btn-sm">ACC</button>
+                    </form>
+
+                    {{-- Tombol Reject --}}
+                    <form action="{{ route('admin.permohonan.status', $p->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="status" value="reject">
+                        <button class="btn btn-danger btn-sm">Reject</button>
+                    </form>
+
                 </td>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+            @empty
+            <tr>
+                <td colspan="6" class="text-center">Belum ada permohonan</td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 @endsection

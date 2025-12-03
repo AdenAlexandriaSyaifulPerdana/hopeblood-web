@@ -55,22 +55,25 @@
             🔍 Lihat Permintaan Darah
         </a>
 
-        {{-- Tombol Riwayat
-        <div style="
+        {{-- Tombol Riwayat --}}
+        <a href="{{ route('pendonor.riwayat') }}"
+            style="
                 padding: 18px 22px;
-                background: #ff8c8c;
+                background: linear-gradient(150deg, #ff6b6b, #ff3b3b);
                 color: white;
                 font-size: 18px;
                 border-radius: 18px;
                 text-align: center;
-                font-weight: 600;
-                opacity: 0.6;
-                cursor: not-allowed;
-                box-shadow: 0 6px 20px rgba(255,140,140,0.25);
-            ">
-            🕒 Riwayat Konfirmasi Donor
-            <span style="font-size:14px;">(Coming Soon)</span>
-        </div> --}}
+                text-decoration: none;
+                font-weight: 700;
+                box-shadow: 0 8px 25px rgba(255,70,70,0.35);
+                transition: 0.3s ease;
+                display: block;
+            "
+            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 30px rgba(255,70,70,0.45)'"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(255,70,70,0.35)'">
+            🔍 Lihat Riwayat donor
+        </a>
 
         {{-- Logout --}}
         <form action="{{ route('logout') }}" method="POST">

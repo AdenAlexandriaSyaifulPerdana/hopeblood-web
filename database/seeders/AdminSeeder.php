@@ -18,6 +18,7 @@ class AdminSeeder extends Seeder
             'email' => 'pmi@gmail.com',
             'password' => Hash::make('pmi123'),
             'role' => 'admin',
+            'hospital_id' => '1',
             'usia' => '20',
             'alamat' => 'Jl. Srikoyo No. 115, Patrang, Jember',
             'golongan_darah' => 'O A B AB'
@@ -28,6 +29,7 @@ class AdminSeeder extends Seeder
             'email' => 'soebandi@gmail.com',
             'password' => Hash::make('soebandi123'),
             'role' => 'admin',
+            'hospital_id' => '2',
             'usia' => '20',
             'alamat' => 'Jl. dr. Soebandi No. 124, Patrang, Jember',
             'golongan_darah' => 'O A B AB'
@@ -38,6 +40,7 @@ class AdminSeeder extends Seeder
             'email' => 'balung@gmail.com',
             'password' => Hash::make('balung123'),
             'role' => 'admin',
+            'hospital_id' => '3',
             'usia' => '20',
             'alamat' => 'Jl. Rambipuji–Balung, Balung, Jember',
             'golongan_darah' => 'O A B AB'
@@ -48,6 +51,7 @@ class AdminSeeder extends Seeder
             'email' => 'dkt@gmail.com',
             'password' => Hash::make('dkt123'),
             'role' => 'admin',
+            'hospital_id' => '4',
             'usia' => '20',
             'alamat' => 'Jl. PB Sudirman, Kepatihan, Jember',
             'golongan_darah' => 'O A B AB'
@@ -58,6 +62,7 @@ class AdminSeeder extends Seeder
             'email' => 'pratama@gmail.com',
             'password' => Hash::make('pratama123'),
             'role' => 'admin',
+            'hospital_id' => '5',
             'usia' => '20',
             'alamat' => 'Area sekitar Kantor PMI Jember',
             'golongan_darah' => 'O A B AB'
