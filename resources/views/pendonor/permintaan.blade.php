@@ -1,411 +1,222 @@
-<h2>Permintaan Darah Sesuai Golongan Anda</h2>
+@extends('pendonor.layout')
 
+@section('content')
+
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-slate-800">Permintaan Darah Sesuai Golongan Anda</h2>
+</div>
+
+{{-- SUCCESS ALERT --}}
 @if(session('success'))
-    <p style="color: green;">{{ session('success') }}</p>
+<div class="mb-4 rounded-xl bg-green-50 border border-green-200 p-4 text-green-700">
+    {{ session('success') }}
+</div>
 @endif
 
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Golongan</th>
-        <th>Rumah Sakit</th>
-        <th>Keterangan</th>
-        <th>Aksi</th>
-    </tr>
+{{-- TABLE --}}
+<div class="bg-white rounded-xl shadow-md overflow-hidden p-4">
+    <table id="tabelPermintaan" class="min-w-full text-sm">
+        <thead class="bg-red-600 text-white">
+            <tr>
+                <th class="py-3 px-4 text-left">Golongan</th>
+                <th class="py-3 px-4 text-left">Rumah Sakit</th>
+                <th class="py-3 px-4 text-left">Keterangan</th>
+                <th class="py-3 px-4 text-left">Aksi</th>
+            </tr>
+        </thead>
 
-    @foreach($data as $d)
-    <tr>
-        <td>{{ $d->golongan_darah }}</td>
-        <td>{{ $d->lokasi_rumah_sakit }}</td>
-        <td>{{ $d->keterangan }}</td>
-        <td>
-            <form action="{{ route('pendonor.konfirmasi') }}" method="POST" class="permohonan-form">
-                @csrf
-                <input type="hidden" name="id_permohonan" value="{{ $d->id }}">
+        <tbody>
+            @foreach($data as $d)
+            <tr class="border-b hover:bg-slate-50">
+                <td class="py-3 px-4">{{ $d->golongan_darah }}</td>
+                <td class="py-3 px-4">{{ $d->lokasi_rumah_sakit }}</td>
+                <td class="py-3 px-4">{{ $d->keterangan }}</td>
 
-                <label>Lokasi Donor</label><br>
-                <select name="lokasi_donor" id="lokasi_select_{{ $d->id }}" required>
-                    <option value="">-- Pilih Lokasi Donor --</option>
+                <td class="py-3 px-4">
+                    {{-- FORM CARD --}}
+                    <form action="{{ route('pendonor.konfirmasi') }}" method="POST"
+                        class="permohonan-form bg-white border p-4 rounded-xl shadow-sm space-y-3">
+                        @csrf
 
-                    @foreach ($hospitals as $rs)
-                        @php
-                            $jam = explode('-', $rs->jam_operasional);
-                            $open = trim($jam[0] ?? '');
-                            $close = trim($jam[1] ?? '');
-                            $openHtml = str_replace('.', ':', $open);    // 08.00 -> 08:00
-                            $closeHtml = str_replace('.', ':', $close);
-                        @endphp
+                        <input type="hidden" name="id_permohonan" value="{{ $d->id }}">
 
-                        <option value="{{ $rs->id }}"
-                                data-open="{{ $openHtml }}"
-                                data-close="{{ $closeHtml }}">
-                            {{ $rs->nama_rumah_sakit }} ({{ $rs->jam_operasional }})
-                        </option>
-                    @endforeach
-                </select>
+                        {{-- LOKASI --}}
+                        <div>
+                            <label class="font-semibold">Lokasi Donor</label>
+                            <select name="lokasi_donor" id="lokasi_{{ $d->id }}" required>
+                                <option value="">-- Pilih Lokasi Donor --</option>
 
-                <div style="margin-top:6px;">
-                    <label>Tanggal Donor</label><br>
-                    <input type="date" name="tanggal_donor" id="tanggal_{{ $d->id }}" required>
-                </div>
+                                @foreach ($hospitals as $rs)
+                                    @php
+                                        $jam = explode('-', $rs->jam_operasional);
+                                        $open = str_replace('.', ':', trim($jam[0] ?? ''));
+                                        $close = str_replace('.', ':', trim($jam[1] ?? ''));
+                                    @endphp
 
-                <div style="margin-top:6px;">
-                    <label>Waktu Donor</label><br>
-                    <input type="time" name="waktu_donor" id="waktu_{{ $d->id }}" required>
-                    <div id="waktu_error_{{ $d->id }}" style="color:#b91c1c; font-size:.9rem; display:none;"></div>
-                    <button type="button" id="set_open_{{ $d->id }}" style="display:none; margin-top:6px;">Set ke jam buka</button>
-                </div>
+                                    <option value="{{ $rs->id }}"
+                                        data-open="{{ $open }}"
+                                        data-close="{{ $close }}">
+                                        {{ $rs->nama_rumah_sakit }} ({{ $rs->jam_operasional }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                <div style="margin-top:8px;">
-                    <button type="submit">Saya Bersedia Donor</button>
-                </div>
+                        {{-- TANGGAL --}}
+                        <div>
+                            <label class="font-semibold">Tanggal Donor</label>
+                            <input type="date" name="tanggal_donor" id="tanggal_{{ $d->id }}" required>
+                        </div>
 
-                {{-- menampilkan pesan server-side --}}
-                @if(session('error'))
-                    <p style="color:red; margin-top:6px;">{{ session('error') }}</p>
-                @endif
-                @if ($errors->any())
-                    <div style="color:red; margin-top:6px;">
-                        <ul style="margin:0; padding-left:18px;">
-                            @foreach ($errors->all() as $err)
-                                <li>{{ $err }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-            </form>
+                        {{-- WAKTU --}}
+                        <div>
+                            <label class="font-semibold">Waktu Donor</label>
+                            <input type="time" name="waktu_donor" id="waktu_{{ $d->id }}" required>
+                            <div id="err_{{ $d->id }}" class="hidden mt-2 rounded-lg border border-red-200 bg-red-50 text-red-600 text-xs p-2"></div>
+                            <button type="button" id="btn_open_{{ $d->id }}" class="hidden mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded-lg">
+                                Set ke Jam Buka
+                            </button>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg shadow-md">
+                            Saya Bersedia Donor
+                        </button>
+
+                        {{-- server errors --}}
+                        @if ($errors->any())
+                            <ul class="text-red-600 text-sm mt-2 list-disc pl-5">
+                                @foreach ($errors->all() as $err)
+                                    <li>{{ $err }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </form>
+
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+{{-- BACK --}}
+<div class="mt-6">
+    <a href="{{ route('pendonor.dashboard') }}"
+        class="inline-block px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800">
+        Kembali
+    </a>
+</div>
+
+{{-- SUCCESS MODAL --}}
+@if(session('success'))
+<div id="successModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-white p-6 rounded-2xl w-80 shadow-lg animate-fadeUp text-center">
+        <h3 class="text-green-600 font-bold text-lg mb-2">Berhasil</h3>
+        <p>{{ session('success') }}</p>
+
+        <button onclick="document.getElementById('successModal').remove()"
+            class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
+            OK
+        </button>
+    </div>
+</div>
+@endif
 
 
-        </td>
-    </tr>
-    @endforeach
-</table>
-
+{{-- SCRIPT VALIDASI --}}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // set tanggal minimal hari ini (global)
+document.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
 
-    // cari semua form permohonan (loop berdasarkan id pattern)
-    document.querySelectorAll('form.permohonan-form').forEach(function(form) {
-        const hiddenId = form.querySelector('input[name="id_permohonan"]').value;
-        const lokasiSelect = form.querySelector('select[name="lokasi_donor"]');
-        const tanggalInput   = form.querySelector('input[name="tanggal_donor"]');
-        const waktuInput     = form.querySelector('input[name="waktu_donor"]');
-        const errDiv         = form.querySelector('[id^="waktu_error_"]');
-        const setOpenBtn     = form.querySelector('[id^="set_open_"]');
+    document.querySelectorAll('.permohonan-form').forEach(form => {
+        const id = form.querySelector('input[name="id_permohonan"]').value;
+        const lokasi = form.querySelector(`#lokasi_${id}`);
+        const tanggal = form.querySelector(`#tanggal_${id}`);
+        const waktu   = form.querySelector(`#waktu_${id}`);
+        const err     = form.querySelector(`#err_${id}`);
+        const btnOpen = form.querySelector(`#btn_open_${id}`);
 
-        // set minimal tanggal = hari ini
-        if (tanggalInput) tanggalInput.setAttribute('min', today);
+        tanggal.min = today;
 
-        function hideError() {
-            if (!errDiv) return;
-            errDiv.style.display = 'none';
-            errDiv.textContent = '';
-        }
+        const hideError = () => {
+            err.classList.add('hidden');
+            err.textContent = '';
+        };
 
-        function showError(text) {
-            if (!errDiv) return;
-            errDiv.textContent = text;
-            errDiv.style.display = 'block';
-        }
+        const showError = (msg) => {
+            err.textContent = msg;
+            err.classList.remove('hidden');
+        };
 
-        // ketika ganti lokasi => set time.min/time.max dan tampilkan tombol set ke jam buka
-        lokasiSelect.addEventListener('change', function() {
+        lokasi.addEventListener('change', () => {
             hideError();
-            if (!this.value) {
-                waktuInput.removeAttribute('min');
-                waktuInput.removeAttribute('max');
-                if (setOpenBtn) setOpenBtn.style.display = 'none';
+
+            if (!lokasi.value) {
+                waktu.removeAttribute('min');
+                waktu.removeAttribute('max');
+                btnOpen.classList.add('hidden');
                 return;
             }
 
-            const opt = this.selectedOptions[0];
-            const open = opt.dataset.open;   // "08:00"
-            const close = opt.dataset.close; // "20:00"
+            let open = lokasi.selectedOptions[0].dataset.open;
+            let close = lokasi.selectedOptions[0].dataset.close;
 
-            if (open) waktuInput.setAttribute('min', open);
-            if (close) waktuInput.setAttribute('max', close);
+            waktu.min = open;
+            waktu.max = close;
 
-            // tampilkan tombol auto-set ke jam buka
-            if (setOpenBtn) {
-                setOpenBtn.style.display = 'inline-block';
-                setOpenBtn.onclick = function() {
-                    waktuInput.value = open || '';
-                    hideError();
-                };
-            }
-
-            // jika user sudah isi waktu dan di luar rentang -> adjust ke nearest bound (UX-friendly)
-            if (waktuInput.value) {
-                const val = waktuInput.value;
-                if (open && val < open) {
-                    waktuInput.value = open;
-                    showError(`Waktu disesuaikan ke jam buka ${open}`);
-                    setTimeout(hideError, 3000);
-                } else if (close && val > close) {
-                    waktuInput.value = close;
-                    showError(`Waktu disesuaikan ke jam tutup ${close}`);
-                    setTimeout(hideError, 3000);
-                }
-            }
-        });
-
-        // ketika user input waktu -> validasi tanpa alert
-        waktuInput.addEventListener('input', function () {
-            hideError();
-            const min = this.getAttribute('min');
-            const max = this.getAttribute('max');
-
-            if (!min && !max) return; // belum pilih lokasi
-
-            if ((min && this.value < min) || (max && this.value > max)) {
-                showError(`Waktu harus antara ${min || '00:00'} — ${max || '23:59'}.`);
-            } else {
+            btnOpen.classList.remove('hidden');
+            btnOpen.onclick = () => {
+                waktu.value = open;
                 hideError();
-            }
+            };
         });
 
-        // optional: saat submit, double-check waktu client-side supaya user cepat tau
-        form.addEventListener('submit', function (ev) {
-            const min = waktuInput.getAttribute('min');
-            const max = waktuInput.getAttribute('max');
-            if ((min && waktuInput.value < min) || (max && waktuInput.value > max)) {
-                ev.preventDefault();
-                showError(`Waktu harus antara ${min || '00:00'} — ${max || '23:59'}. Silakan perbaiki atau klik "Set ke jam buka".`);
-                return false;
+        waktu.addEventListener('input', () => {
+            hideError();
+            let min = waktu.min;
+            let max = waktu.max;
+
+            if ((min && waktu.value < min) || (max && waktu.value > max)) {
+                showError(`Waktu harus antara ${min} — ${max}.`);
             }
-            // else submit (server-side akan tetap memvalidasi)
         });
     });
 });
 </script>
 
 
-@if(session('error'))
-    <p style="color:red;">{{ session('error') }}</p>
-@endif
-
-<a href="{{ route('pendonor.dashboard') }}">Kembali</a>
-
-<!-- Modal Notifikasi -->
-<!-- Modal Custom -->
-<div id="successModal"
-    style="
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5);
-        justify-content: center;
-        align-items: center;
-    ">
-
-    <div style="
-        background: white;
-        padding: 20px 25px;
-        border-radius: 10px;
-        width: 350px;
-        text-align: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        animation: fadeIn 0.3s ease;
-    ">
-        <h3 style="margin-bottom: 10px; color: green;">Berhasil</h3>
-        <p>{{ session('success') }}</p>
-
-        <button onclick="closeModal()"
-            style="
-                margin-top: 15px;
-                padding: 8px 15px;
-                border: none;
-                background: green;
-                color: white;
-                border-radius: 6px;
-                cursor: pointer;
-            ">
-            OK
-        </button>
-    </div>
-</div>
-
-
-@if(session('success'))
+{{-- TABLE JAVASCRIPT (tanpa jQuery, simple + rapi) --}}
 <script>
-    document.getElementById('successModal').style.display = 'flex';
+document.addEventListener("DOMContentLoaded", () => {
+    const table = document.querySelector("#tabelPermintaan");
+    const rows = Array.from(table.querySelectorAll("tbody tr"));
+    const searchBar = document.createElement("input");
 
-    function closeModal() {
-        document.getElementById('successModal').style.display = 'none';
-    }
+    searchBar.placeholder = "Cari permintaan...";
+    searchBar.className =
+        "mb-3 w-full p-2 border rounded-lg shadow-sm focus:ring-red-400 focus:border-red-400";
+
+    table.parentElement.prepend(searchBar);
+
+    searchBar.addEventListener("keyup", () => {
+        let q = searchBar.value.toLowerCase();
+
+        rows.forEach(r => {
+            r.style.display = r.innerText.toLowerCase().includes(q) ? "" : "none";
+        });
+    });
+});
 </script>
-@endif
 
+{{-- ANIMATION --}}
 <style>
-@keyframes fadeIn {
-    from { transform: scale(0.9); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-}
-</style>
-
-<style>
-
-/* ===== GLOBAL ===== */
-body {
-    font-family: "Inter", Arial, sans-serif;
-    background: #f3f4f6;
-    color: #1f2937;
-}
-
-/* ===== TABLE ===== */
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 20px;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-}
-
-th {
-    background: #dc2626;
-    color: white;
-    padding: 14px;
-    text-align: left;
-    font-size: 15px;
-    letter-spacing: 0.3px;
-}
-
-td {
-    padding: 14px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-tr:last-child td {
-    border-bottom: none;
-}
-
-tr:hover td {
-    background: #f9fafb;
-    transition: 0.2s;
-}
-
-/* ===== FORM CARD ===== */
-.permohonan-form {
-    margin-top: 10px;
-    background: #ffffff;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-/* ===== LABEL ===== */
-.permohonan-form label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-}
-
-/* ===== INPUT + SELECT ===== */
-.permohonan-form select,
-.permohonan-form input[type="date"],
-.permohonan-form input[type="time"] {
-    width: 100%;
-    margin-top: 6px;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #f9fafb;
-    transition: 0.2s;
-}
-
-.permohonan-form select:focus,
-.permohonan-form input[type="date"]:focus,
-.permohonan-form input[type="time"]:focus {
-    border-color: #dc2626;
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(220,38,38,0.2);
-}
-
-/* ===== SUBMIT BUTTON ===== */
-.permohonan-form button[type="submit"] {
-    width: 100%;
-    background: #dc2626;
-    padding: 10px 14px;
-    color: white;
-    border-radius: 8px;
-    border: none;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: 0.25s;
-    box-shadow: 0 2px 6px rgba(220,38,38,0.3);
-}
-
-.permohonan-form button[type="submit"]:hover {
-    background: #b91c1c;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(220,38,38,0.4);
-}
-
-/* ===== TOMBOL SET JAM BUKA ===== */
-button[id^="set_open_"] {
-    background: #2563eb;
-    padding: 8px 12px;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: 0.2s;
-}
-
-button[id^="set_open_"]:hover {
-    background: #1d4ed8;
-}
-
-/* ===== ERROR TEXT ===== */
-[id^="waktu_error_"] {
-    margin-top: 6px;
-    padding: 6px 8px;
-    background: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-/* ===== MODAL ===== */
-#successModal {
-    backdrop-filter: blur(4px);
-}
-
-#successModal > div {
-    border-radius: 14px !important;
-    padding: 25px !important;
-    animation: fadeUp 0.3s ease;
-}
-
-#successModal button {
-    width: 100%;
-    padding: 10px 12px !important;
-    border-radius: 8px !important;
-}
-
-/* ===== ANIMATION ===== */
 @keyframes fadeUp {
-    from {
-        transform: translateY(30px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-
+.animate-fadeUp { animation: fadeUp .35s ease; }
 </style>
+
+@endsection

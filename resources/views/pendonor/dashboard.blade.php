@@ -1,103 +1,68 @@
-<div style="
-    max-width: 720px;
-    margin: 55px auto;
-    background: linear-gradient(145deg, #ffe8e5, #ffd4ce);
-    padding: 42px;
-    border-radius: 28px;
-    box-shadow: 0 10px 40px rgba(255,120,120,0.25);
-    border: 1px solid #ffdad4;
-    font-family: 'Poppins', 'Segoe UI', sans-serif;
-">
+@extends('pendonor.layout')
 
-    {{-- Header --}}
-    <h2 style="
-        font-size: 32px;
-        font-weight: 800;
-        margin-bottom: 18px;
-        color: #d9383b;
-        letter-spacing: 0.5px;
-        text-shadow: 0 2px 6px rgba(255,80,80,0.25);
-    ">
-        Dashboard Pendonor
-    </h2>
+@section('content')
+<div class="bg-gradient-to-br from-sky-50 via-white to-sky-100 rounded-3xl shadow-md p-8 md:p-10">
+    <div class="grid md:grid-cols-2 gap-8 items-center">
 
-    <p style="
-        font-size: 18px;
-        margin-bottom: 32px;
-        color: #6e2222;
-        line-height: 1.6;
-        font-weight: 500;
-    ">
-        Halo, <strong style="color:#b31c1c">{{ Auth::user()->name }}</strong> 👋
-        <br>Terima kasih telah menjadi bagian dari penyelamat nyawa ❤️
-    </p>
+        {{-- LEFT SECTION --}}
+        <div class="space-y-5">
+            <p class="text-sm uppercase tracking-[0.2em] text-sky-500 font-semibold">
+                Donate Blood, Save Lives
+            </p>
 
-    {{-- Menu Buttons --}}
-    <div style="display: flex; flex-direction: column; gap: 22px;">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
+                Blood<br class="hidden md:block" />
+                <span class="text-sky-600">Donation</span>
+            </h2>
 
-        {{-- Tombol Permintaan Darah --}}
-        <a href="{{ route('pendonor.permintaan') }}"
-            style="
-                padding: 18px 22px;
-                background: linear-gradient(150deg, #ff6b6b, #ff3b3b);
-                color: white;
-                font-size: 18px;
-                border-radius: 18px;
-                text-align: center;
-                text-decoration: none;
-                font-weight: 700;
-                box-shadow: 0 8px 25px rgba(255,70,70,0.35);
-                transition: 0.3s ease;
-                display: block;
-            "
-            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 30px rgba(255,70,70,0.45)'"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(255,70,70,0.35)'">
-            🔍 Lihat Permintaan Darah
-        </a>
+            <p class="text-sm md:text-base text-slate-600 max-w-md">
+                Terima kasih telah menjadi pendonor. Di dashboard ini kamu bisa melihat jadwal,
+                riwayat donasi, dan permintaan darah yang membutuhkan bantuanmu.
+            </p>
 
-        {{-- Tombol Riwayat --}}
-        <a href="{{ route('pendonor.riwayat') }}"
-            style="
-                padding: 18px 22px;
-                background: linear-gradient(150deg, #ff6b6b, #ff3b3b);
-                color: white;
-                font-size: 18px;
-                border-radius: 18px;
-                text-align: center;
-                text-decoration: none;
-                font-weight: 700;
-                box-shadow: 0 8px 25px rgba(255,70,70,0.35);
-                transition: 0.3s ease;
-                display: block;
-            "
-            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 30px rgba(255,70,70,0.45)'"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(255,70,70,0.35)'">
-            🔍 Lihat Riwayat donor
-        </a>
+            <div class="flex flex-wrap gap-4">
+                <a href="{{ route('pendonor.permintaan') }}"
+                   class="inline-flex items-center px-5 py-2.5 rounded-full bg-red-500 text-white text-sm font-semibold shadow-md hover:bg-red-600 transition">
+                    Lihat Permintaan
+                </a>
 
-        {{-- Logout --}}
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit"
-                style="
-                    width: 100%;
-                    padding: 18px 22px;
-                    background: #ffb4a8;
-                    color: #7a2323;
-                    border: none;
-                    border-radius: 18px;
-                    cursor: pointer;
-                    font-size: 18px;
-                    font-weight: 700;
-                    box-shadow: 0 6px 20px rgba(255,180,168,0.4);
-                    transition: 0.3s ease;
-                "
-                onmouseover="this.style.background='#ff9e90'; this.style.transform='translateY(-3px)'"
-                onmouseout="this.style.background='#ffb4a8'; this.style.transform='translateY(0)'">
-                Logout
-            </button>
-        </form>
+                <a href="{{ route('pendonor.riwayat') }}"
+                   class="inline-flex items-center px-5 py-2.5 rounded-full border border-sky-500 text-sky-600 text-sm font-semibold hover:bg-sky-50 transition">
+                    Riwayat Donor
+                </a>
+            </div>
 
+            {{-- INFO ROW --}}
+            <div class="flex flex-wrap gap-4 text-xs md:text-sm text-slate-600">
+                <div>
+                    Golongan darah:
+                    <span class="font-semibold text-slate-900">{{ $golongan_darah ?? 'A' }}</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- RIGHT SECTION (CARD) --}}
+        <div class="relative">
+            <div class="relative mx-auto w-full max-w-md">
+
+                {{-- MAIN CARD --}}
+                <div class="relative bg-white rounded-3xl shadow-xl px-7 py-6">
+                    {{-- HEADER STATUS --}}
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="inline-flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-sm">
+                                +
+                            </span>
+                            <span class="text-sm font-semibold text-slate-800">Status Pendonor</span>
+                        </div>
+
+                        <span class="text-xs px-3 py-1 rounded-full bg-red-50 text-red-500 font-semibold">
+                            Aktif
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>
+@endsection
