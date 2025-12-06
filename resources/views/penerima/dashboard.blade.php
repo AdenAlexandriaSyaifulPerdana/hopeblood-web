@@ -17,6 +17,10 @@
     <button>Lihat Status Permohonan Darah</button>
 </a>
 
+
+<!-- Tombol Profil  -->
+<a href="{{ route('penerima.profile') }}">Lihat Profil</a>
+
 <hr>
 
 <form action="{{ route('logout') }}" method="POST">

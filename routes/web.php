@@ -10,6 +10,7 @@ use App\Http\Controllers\PenerimaController;
 use App\Http\Controllers\PendonorController;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\AdminRSController;
+use App\Http\Controllers\Admin\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +92,19 @@ Route::middleware(['auth', 'role:admin', 'checkprofile'])->group(function () {
 
     Route::put('/admin/konfirmasi-donor/{id}/reject', [UserController::class, 'konfirmasiDonorReject'])
         ->name('admin.konfirmasi.reject');
+
+    // LAPORAN
+
+    Route::get('/admin/laporan', [LaporanController::class, 'index'])
+        ->name('admin.laporan');
+
+    Route::get('/admin/laporan/pdf', [LaporanController::class, 'pdf'])
+        ->name('admin.laporan.pdf');
+
+    Route::get('/admin/laporan/excel', [LaporanController::class, 'exportExcel'])
+    ->name('admin.laporan.excel');
+
+
 });
 
 /*
@@ -110,9 +124,6 @@ Route::middleware(['auth', 'role:pendonor', 'checkprofile'])->group(function () 
     Route::get('/pendonor/riwayat', [PendonorController::class, 'riwayatDonor'])
         ->name('pendonor.riwayat');
 
-    Route::get('/pendonor/riwayat',
-        [PendonorController::class, 'riwayatDonor'])
-        ->name('pendonor.riwayat');
 
     Route::get('/pendonor/download-surat/{id}',
         [PendonorController::class, 'downloadSurat'])
@@ -122,7 +133,18 @@ Route::middleware(['auth', 'role:pendonor', 'checkprofile'])->group(function () 
     // Konfirmasi donor
     Route::post('/pendonor/konfirmasi',
     [PendonorController::class, 'konfirmasiDonor']
-)->name('pendonor.konfirmasi');
+    )->name('pendonor.konfirmasi');
+
+    //profile donor
+    Route::get('/pendonor/profile', [PendonorController::class, 'profile'])
+        ->name('pendonor.profile');
+
+    Route::get('/pendonor/profile/edit', [PendonorController::class, 'editProfile'])
+        ->name('pendonor.profile.edit');
+
+    Route::put('/pendonor/profile/update', [PendonorController::class, 'updateProfile'])
+        ->name('pendonor.profile.update');
+
 });
 
 
@@ -151,6 +173,16 @@ Route::middleware(['auth', 'role:penerima', 'checkprofile'])->group(function () 
     Route::get('/penerima/permohonan/status',
         [PenerimaController::class, 'statusPermohonan']
     )->name('penerima.permohonan.status');
+
+    //profile penerima
+        Route::get('/penerima/profile', [PenerimaController::class, 'profile'])
+        ->name('penerima.profile');
+
+    Route::get('/penerima/profile/edit', [PenerimaController::class, 'editProfile'])
+        ->name('penerima.profile.edit');
+
+    Route::put('/penerima/profile/update', [PenerimaController::class, 'updateProfile'])
+        ->name('penerima.profile.update');
 });
 
 
@@ -162,3 +194,12 @@ Route::middleware(['auth', 'role:penerima', 'checkprofile'])->group(function () 
 */
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
+
+
+
+
+
+
+
+
+

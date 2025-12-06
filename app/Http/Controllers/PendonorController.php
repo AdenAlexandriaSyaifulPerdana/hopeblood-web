@@ -92,7 +92,8 @@ class PendonorController extends Controller
         $data = KonfirmasiDonor::where('id', $id)
                 ->where('id_pendonor', Auth::id())
                 ->with(['permohonan', 'hospital'])
-                ->firstOrFail();
+
+           ->firstOrFail();
 
         if ($data->status !== 'disetujui') {
             return back()->with('error', 'Belum bisa mendownload surat rujukan.');
@@ -101,4 +102,63 @@ class PendonorController extends Controller
         $pdf = Pdf::loadView('pendonor.surat_rujukan', compact('data'));
         return $pdf->download('surat_rujukan_'.$data->id.'.pdf');
     }
+
+    // ===============================
+    // ✅ HALAMAN PROFIL
+    // ===============================
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('pendonor.profile', compact('user'));
+    }
+
+    // ===============================
+    // ✅ HALAMAN EDIT PROFIL
+    // ===============================
+    public function editProfile()
+    {
+        $user = Auth::user();
+        return view('pendonor.edit', compact('user'));
+    }
+
+    // ===============================
+    // ✅ UPDATE PROFIL (KODEMU)
+    // ===============================
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name'   => 'required|string|max:255',
+            'usia'   => 'required|numeric',
+            'alamat' => 'required|string',
+            'golongan_darah' => 'required|string|in:A,B,AB,O',
+        ]);
+
+        $user = Auth::user();
+
+        // ✅ CEK JIKA TIDAK ADA PERUBAHAN
+        if (
+            $request->name == $user->name &&
+            $request->usia == $user->usia &&
+            $request->alamat == $user->alamat &&
+            $request->golongan_darah == $user->golongan_darah
+        ) {
+            return redirect()->route('pendonor.profile.edit')
+                ->with('warning', 'Tidak ada perubahan yang disimpan.');
+        }
+
+        // ✅ UPDATE DATA
+        $user->update([
+            'name'   => $request->name,
+            'usia'   => $request->usia,
+            'alamat' => $request->alamat,
+            'golongan_darah' => $request->golongan_darah,
+        ]);
+
+        // ✅ PESAN SUKSES
+        return redirect()
+            ->route('pendonor.profile')
+            ->with('success', 'Profil berhasil diperbarui.');
+    }
 }
+
+

@@ -76,7 +76,7 @@
                 <li class="pt-2 text-gray-500 uppercase text-xs font-bold">Laporan</li>
 
                 <li>
-                    <a href="#" class="block px-4 py-3 rounded-lg hover:bg-red-100">
+                    <a href="{{ route('admin.laporan') }}" class="block px-4 py-3 rounded-lg hover:bg-red-100">
                         📊 Laporan & Statistik
                     </a>
                 </li>
@@ -93,7 +93,10 @@
 
         </main>
 
-    </div>
+         <!-- chart.js  menampilan grafik web -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    </div>
+@yield('scripts')
 </body>
 </html>

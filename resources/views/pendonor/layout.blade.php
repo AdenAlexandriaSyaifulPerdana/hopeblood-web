@@ -73,10 +73,12 @@
                     Halo, {{ Auth::user()->name ?? 'Pendonor' }}
                 </span>
 
-                {{-- Avatar --}}
-                <div class="w-9 h-9 rounded-full bg-red-500 text-white flex items-center justify-center text-sm">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'P',0,1)) }}
-                </div>
+               {{-- Avatar --}}
+                <a href="{{ route('pendonor.profile') }}"
+                    class="w-9 h-9 bg-red-500 text-white flex items-center justify-center rounded-full font-bold">
+                    {{ strtoupper(substr(Auth::user()->name ?? 'P', 0, 1)) }}
+                </a>
+
 
                 {{-- Tombol Logout --}}
                 <form action="{{ route('logout') }}" method="POST">
