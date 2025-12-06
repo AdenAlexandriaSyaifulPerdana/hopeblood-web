@@ -1,45 +1,74 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Profil Pendonor</title>
-</head>
-<body>
+{{-- resources/views/pendonor/profile.blade.php --}}
+@extends('pendonor.layout')
 
-<h1>Profil Pendonor</h1>
+@section('content')
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-md px-8 py-8 md:px-10 md:py-10">
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Profil Pendonor</h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    Data akun yang digunakan untuk aktivitas donor darah.
+                </p>
+            </div>
+        </div>
 
-{{-- ✅ Notifikasi Sukses --}}
-@if(session('success'))
-    <p style="padding:10px; background:#d4edda; color:#155724; border:1px solid #c3e6cb;">
-        {{ session('success') }}
-    </p>
-@endif
+        {{-- Notifikasi sukses --}}
+        @if(session('success'))
+            <div class="mb-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {{ session('success') }}
+            </div>
+        @endif
 
-{{-- ✅ Notifikasi Warning --}}
-@if(session('warning'))
-    <p style="padding:10px; background:#fff3cd; color:#856404; border:1px solid #ffeeba;">
-        {{ session('warning') }}
-    </p>
-@endif
+        {{-- Notifikasi warning --}}
+        @if(session('warning'))
+            <div class="mb-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                {{ session('warning') }}
+            </div>
+        @endif
 
-<p><strong>Nama:</strong> {{ $user->name }}</p>
-<p><strong>Usia:</strong> {{ $user->usia ?? '-' }}</p>
-<p><strong>Alamat:</strong> {{ $user->alamat ?? '-' }}</p>
-<p><strong>Golongan Darah:</strong> {{ $user->golongan_darah ?? '-' }}</p>
+        <div class="space-y-4">
+            <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-1">Nama</p>
+                <p class="text-base font-semibold text-slate-900">
+                    {{ $user->name }}
+                </p>
+            </div>
 
-<br>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-1">Usia</p>
+                    <p class="text-base text-slate-800">
+                        {{ $user->usia ?? '-' }}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-1">Golongan Darah</p>
+                    <p class="text-base font-semibold text-red-500">
+                        {{ $user->golongan_darah ?? '-' }}
+                    </p>
+                </div>
+            </div>
 
-<a href="{{ route('pendonor.profile.edit') }}"
-   style="display:inline-block; padding:8px 14px; background:#007bff; color:white; text-decoration:none; border-radius:4px;">
-    Edit Profil
-</a>
+            <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-1">Alamat</p>
+                <p class="text-base text-slate-800">
+                    {{ $user->alamat ?? '-' }}
+                </p>
+            </div>
+        </div>
 
-<br><br>
+        <div class="mt-8 flex flex-wrap gap-3">
+            <a href="{{ route('pendonor.profile.edit') }}"
+               class="inline-flex items-center px-5 py-2.5 rounded-full bg-sky-600 text-white text-sm font-semibold shadow-md hover:bg-sky-700 transition">
+                Edit Profil
+            </a>
 
-<a href="{{ route('pendonor.dashboard') }}"
-   style="display:inline-block; padding:8px 14px; background:#6c757d; color:white; text-decoration:none; border-radius:4px;">
-    Kembali ke Dashboard
-</a>
-
-</body>
-</html>
+            <a href="{{ route('pendonor.dashboard') }}"
+               class="inline-flex items-center px-5 py-2.5 rounded-full border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition">
+                ← Kembali ke Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+@endsection

@@ -1,29 +1,70 @@
-<h1>Dashboard Penerima Darah</h1>
+@extends('penerima.layout')
 
-<p>Halo, {{ Auth::user()->name }}</p>
+@section('content')
+<div class="bg-gradient-to-br from-sky-50 via-white to-sky-100 rounded-3xl shadow-md p-8 md:p-10">
+    <div class="grid md:grid-cols-2 gap-8 items-center">
 
-<hr>
+        {{-- Kiri: teks hero --}}
+        <div class="space-y-5">
+            <p class="text-xs md:text-sm uppercase tracking-[0.2em] text-sky-500 font-semibold">
+                find blood, save lives
+            </p>
 
-<h3>Menu Utama</h3>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
+                Blood<br />
+                <span class="text-red-500">Donation Finder</span>
+            </h2>
 
-<!-- Tombol buat permohonan -->
-<a href="{{ route('penerima.permohonan.form') }}">
-    <button>Buat Permohonan Darah</button>
-</a>
-<br><br>
+            <p class="text-sm md:text-base text-slate-600 max-w-md">
+                Ajukan permohonan darah dan pantau statusnya secara realtime.
+                Sistem akan membantu mencarikan pendonor yang sesuai kebutuhanmu.
+            </p>
 
-<!-- Tombol lihat status -->
-<a href="{{ route('penerima.permohonan.status') }}">
-    <button>Lihat Status Permohonan Darah</button>
-</a>
+            <div class="flex flex-wrap gap-4">
+                <a href="{{ route('penerima.permohonan.form') }}"
+                   class="inline-flex items-center px-5 py-2.5 rounded-full bg-red-500 text-white text-sm font-semibold shadow-md hover:bg-red-600 transition">
+                    Buat Permohonan Darah
+                </a>
 
+                <a href="{{ route('penerima.permohonan.status') }}"
+                   class="inline-flex items-center px-5 py-2.5 rounded-full border border-sky-500 text-sky-600 text-sm font-semibold hover:bg-sky-50 transition">
+                    Lihat Status Permohonan
+                </a>
+            </div>
+        </div>
 
-<!-- Tombol Profil  -->
-<a href="{{ route('penerima.profile') }}">Lihat Profil</a>
+        {{-- Kanan: kartu status ringkas --}}
+        <div class="relative">
+            <div class="relative mx-auto w-full max-w-md bg-white rounded-3xl shadow-xl px-7 py-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="inline-flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-sm">
+                            +
+                        </span>
+                        <span class="text-sm font-semibold text-slate-800">Ringkasan Permohonan</span>
+                    </div>
+                </div>
 
-<hr>
+                <div class="space-y-3 text-sm text-slate-600">
+                    <div class="flex items-center justify-between">
+                        <span>Sedang diproses</span>
+                        <span class="font-semibold text-orange-500">{{ $permohonan_proses ?? 0 }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Terkabul</span>
+                        <span class="font-semibold text-emerald-500">{{ $permohonan_terkabul ?? 0 }}</span>
+                    </div>
+                </div>
 
-<form action="{{ route('logout') }}" method="POST">
-    @csrf
-    <button type="submit">Logout</button>
-</form>
+                <div class="mt-6 flex justify-end">
+                    <a href="{{ route('penerima.permohonan.status') }}"
+                       class="text-xs text-sky-600 hover:text-sky-700 font-medium">
+                        Lihat detail permohonan →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@endsection

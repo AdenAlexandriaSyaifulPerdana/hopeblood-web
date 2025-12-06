@@ -117,6 +117,8 @@ Route::middleware(['auth', 'role:pendonor', 'checkprofile'])->group(function () 
         return view('pendonor.dashboard');
     })->name('pendonor.dashboard');
 
+    Route::get('/pendonor/dashboard', [PendonorController::class, 'dashboard'])
+        ->name('pendonor.dashboard');
 
     Route::get('/pendonor/permintaan', [PendonorController::class, 'lihatPermintaan'])
         ->name('pendonor.permintaan');
@@ -158,6 +160,9 @@ Route::middleware(['auth', 'role:penerima', 'checkprofile'])->group(function () 
     Route::get('/penerima/dashboard', function () {
         return view('penerima.dashboard');
     })->name('penerima.dashboard');
+
+    Route::get('/penerima/dashboard', [PenerimaController::class, 'index'])
+        ->name('penerima.dashboard');
 
     // FORM PERMOHONAN
     Route::get('/penerima/permohonan/buat',

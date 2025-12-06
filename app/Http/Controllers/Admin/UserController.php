@@ -20,8 +20,20 @@ class UserController extends Controller
         $jumlahPendonor = User::where('role', 'pendonor')->count();
         $jumlahPenerima = User::where('role', 'penerima')->count();
 
-        return view('admin.dashboard', compact('jumlahPendonor', 'jumlahPenerima'));
+        // permohonan menunggu (belum diputuskan RS)
+        $permohonanMenunggu = PermohonanDarah::where('status', 'pending')->count();
+
+        // permohonan terpenuhi = yang sudah diputuskan (acc atau reject)
+        $permohonanTerpenuhi = PermohonanDarah::whereIn('status', ['acc', 'reject'])->count();
+
+        return view('admin.dashboard', compact(
+            'jumlahPendonor',
+            'jumlahPenerima',
+            'permohonanMenunggu',
+            'permohonanTerpenuhi'
+        ));
     }
+
 
     /**
      * ============================
@@ -104,6 +116,25 @@ class UserController extends Controller
      * ============================
      */
 
+    public function penerimaUpdate(Request $request, $id)
+    {
+        $penerima = User::findOrFail($id);
+
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => "required|email|unique:users,email,$id",
+            // usia, alamat, golongan_darah tidak perlu di-edit di sini
+        ]);
+
+        $penerima->update([
+            'name'  => $request->name,
+            'email' => $request->email,
+        ]);
+
+        return redirect()->route('admin.penerima.index')
+                        ->with('success', 'Penerima berhasil diperbarui.');
+    }
+
     // LIST PENERIMA
     public function penerimaIndex()
     {
@@ -151,72 +182,72 @@ class UserController extends Controller
     }
 
     // UPDATE PENERIMA (TAMBAHAN, SEBELUMNYA BELUM ADA)
-    public function penerimaUpdate(Request $request, $id)
+    public function konfirmasiDonorIndex()
     {
-        $penerima = User::findOrFail($id);
+        // Ambil ID rumah sakit admin login
+        $adminHospitalId = Auth::user()->hospital_id;
 
-        $request->validate([
-            'name'           => 'required|string|max:255',
-            'email'          => "required|email|unique:users,email,$id",
-            'usia'           => 'required|integer',
-            'alamat'         => 'required|string',
-            'golongan_darah' => 'required|string',
-        ]);
+        // Hanya ambil KONFIRMASI yang menunggu (artinya pendonor sudah klik "saya bersedia donor")
+        $konfirmasi = KonfirmasiDonor::with(['pendonor', 'permohonan', 'hospital'])
+                        ->where('lokasi_donor', $adminHospitalId)
+                        ->where('status', 'menunggu konfirmasi rumah sakit')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
 
-        $penerima->update([
-            'name'           => $request->name,
-            'email'          => $request->email,
-            'usia'           => $request->usia,
-            'alamat'         => $request->alamat,
-            'golongan_darah' => $request->golongan_darah,
-        ]);
-
-        return redirect()->route('admin.penerima.index')
-                         ->with('success', 'Penerima berhasil diperbarui.');
+        return view('admin.konfirmasi.index', compact('konfirmasi'));
     }
 
-public function konfirmasiDonorIndex()
-{
-    // Ambil ID rumah sakit admin login
-    $adminHospitalId = Auth::user()->hospital_id;
-
-    // 🔥 Hanya ambil konfirmasi di rumah sakit miliknya
-    $konfirmasi = KonfirmasiDonor::where('lokasi_donor', $adminHospitalId)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-
-    return view('admin.konfirmasi.index', compact('konfirmasi'));
-}
-
-
+    /**
+     * Terima (ACC) sebuah konfirmasi donor
+     * $id = id konfirmasi (KonfirmasiDonor)
+     */
     public function konfirmasiDonorAcc($id)
     {
-        $permohonan = PermohonanDarah::findOrFail($id);
+        $konfirmasi = KonfirmasiDonor::with('permohonan')->findOrFail($id);
 
-        if (Auth::user()->hospital_id != $permohonan->lokasi_rumah_sakit) {
-            return redirect()->back()->with('error', 'Anda tidak berwenang melakukan ACC pada permohonan ini.');
+        // pastikan admin RS sesuai
+        if (Auth::user()->hospital_id != $konfirmasi->lokasi_donor) {
+            return redirect()->back()->with('error', 'Anda tidak berwenang melakukan ACC pada konfirmasi ini.');
         }
 
-        $permohonan->status = 'ACC';
-        $permohonan->save();
+        // update status konfirmasi
+        $konfirmasi->status = 'disetujui';
+        $konfirmasi->save();
 
-        return back()->with('success', 'Permohonan berhasil di-ACC');
+        // update status permohonan terkait (opsional: sesuai flow aplikasi)
+        if ($konfirmasi->permohonan) {
+            $konfirmasi->permohonan->status = 'sedang dalam proses'; // atau 'disetujui' sesuai kebutuhan
+            $konfirmasi->permohonan->save();
+        }
+
+        return back()->with('success', 'Konfirmasi donor disetujui.');
     }
 
+    /**
+     * Tolak (Reject) sebuah konfirmasi donor
+     * $id = id konfirmasi (KonfirmasiDonor)
+     */
     public function konfirmasiDonorReject($id)
     {
-        $permohonan = PermohonanDarah::findOrFail($id);
+        $konfirmasi = KonfirmasiDonor::with('permohonan')->findOrFail($id);
 
-        if (Auth::user()->hospital_id != $permohonan->lokasi_rumah_sakit) {
-            return redirect()->back()->with('error', 'Anda tidak berwenang melakukan Reject.');
+        // validasi wewenang admin RS
+        if (Auth::user()->hospital_id != $konfirmasi->lokasi_donor) {
+            return redirect()->back()->with('error', 'Anda tidak berwenang melakukan Reject pada konfirmasi ini.');
         }
 
-        $permohonan->status = 'Reject';
-        $permohonan->save();
+        // update status konfirmasi
+        $konfirmasi->status = 'ditolak';
+        $konfirmasi->save();
 
-        return back()->with('success', 'Permohonan berhasil ditolak');
+        // update status permohonan terkait (kembalikan ke menunggu atau sesuai flow)
+        if ($konfirmasi->permohonan) {
+            $konfirmasi->permohonan->status = 'menunggu'; // atau 'ditolak' sesuai kebutuhan
+            $konfirmasi->permohonan->save();
+        }
+
+        return back()->with('success', 'Konfirmasi donor ditolak.');
     }
-
 
 
 

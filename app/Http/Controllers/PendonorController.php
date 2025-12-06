@@ -14,6 +14,35 @@ class PendonorController extends Controller
     /**
      * Menampilkan daftar permintaan darah yang cocok dengan golongan pendonor.
      */
+
+
+    public function dashboard()
+    {
+        $userId = Auth::id();
+
+        // permintaan disetujui
+        $permintaan_disetujui = KonfirmasiDonor::where('id_pendonor', $userId)
+            ->where('status', 'disetujui')
+            ->count();
+
+        // permintaan ditolak
+        $permintaan_ditolak = KonfirmasiDonor::where('id_pendonor', $userId)
+            ->where('status', 'ditolak')
+            ->count();
+
+        // permintaan menunggu (sesuaikan persis dengan nilai status di DB)
+        $permintaan_menunggu = KonfirmasiDonor::where('id_pendonor', $userId)
+            ->where('status', 'menunggu konfirmasi rumah sakit')
+            ->count();
+
+        return view('pendonor.dashboard', compact(
+            'permintaan_disetujui',
+            'permintaan_ditolak',
+            'permintaan_menunggu'
+        ));
+    }
+
+
     public function lihatPermintaan()
     {
         $gol = Auth::user()->golongan_darah;
@@ -127,15 +156,15 @@ class PendonorController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate([
-            'name'   => 'required|string|max:255',
-            'usia'   => 'required|numeric',
-            'alamat' => 'required|string',
+            'name'           => 'required|string|max:255',
+            'usia'           => 'required|numeric',
+            'alamat'         => 'required|string',
             'golongan_darah' => 'required|string|in:A,B,AB,O',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // ✅ CEK JIKA TIDAK ADA PERUBAHAN
         if (
             $request->name == $user->name &&
             $request->usia == $user->usia &&
@@ -146,19 +175,18 @@ class PendonorController extends Controller
                 ->with('warning', 'Tidak ada perubahan yang disimpan.');
         }
 
-        // ✅ UPDATE DATA
         $user->update([
-            'name'   => $request->name,
-            'usia'   => $request->usia,
-            'alamat' => $request->alamat,
+            'name'           => $request->name,
+            'usia'           => $request->usia,
+            'alamat'         => $request->alamat,
             'golongan_darah' => $request->golongan_darah,
         ]);
 
-        // ✅ PESAN SUKSES
         return redirect()
             ->route('pendonor.profile')
             ->with('success', 'Profil berhasil diperbarui.');
     }
+
 }
 
 

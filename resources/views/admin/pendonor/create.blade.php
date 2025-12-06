@@ -1,32 +1,46 @@
 @extends('admin.layout')
 
 @section('content')
-<div class="bg-white shadow-lg rounded-xl p-6 max-w-xl mx-auto">
+<div class="max-w-xl mx-auto bg-white shadow-md rounded-3xl p-6 md:p-8">
+    <h2 class="text-2xl font-bold text-slate-900 mb-2">Tambah Pendonor</h2>
+    <p class="text-sm text-slate-500 mb-6">
+        Lengkapi data berikut untuk menambahkan akun pendonor baru.
+    </p>
 
-    <h2 class="text-2xl font-bold mb-6">Tambah Pendonor</h2>
-
-    <form action="{{ route('admin.pendonor.store') }}" method="POST">
+    <form action="{{ route('admin.pendonor.store') }}" method="POST" class="space-y-5">
         @csrf
 
-        <label class="block mb-2 font-semibold">Nama</label>
-        <input type="text" name="name"
-               class="w-full border rounded-lg px-4 py-2 mb-4"
-               required>
+        <div>
+            <label class="block mb-1 text-sm font-semibold text-slate-700">Nama</label>
+            <input type="text" name="name"
+                   class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                   required>
+        </div>
 
-        <label class="block mb-2 font-semibold">Email</label>
-        <input type="email" name="email"
-               class="w-full border rounded-lg px-4 py-2 mb-4"
-               required>
+        <div>
+            <label class="block mb-1 text-sm font-semibold text-slate-700">Email</label>
+            <input type="email" name="email"
+                   class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                   required>
+        </div>
 
-        <label class="block mb-2 font-semibold">Password</label>
-        <input type="password" name="password"
-               class="w-full border rounded-lg px-4 py-2 mb-4"
-               required>
+        <div>
+            <label class="block mb-1 text-sm font-semibold text-slate-700">Password</label>
+            <input type="password" name="password"
+                   class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                   required>
+        </div>
 
-        <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-            Simpan
-        </button>
+        <div class="flex items-center gap-3 pt-2">
+            <button
+                class="bg-red-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-red-700 transition">
+                Simpan
+            </button>
+            <a href="{{ route('admin.pendonor.index') }}"
+               class="text-sm text-slate-500 hover:text-slate-700">
+                Batal dan kembali
+            </a>
+        </div>
     </form>
-
 </div>
 @endsection

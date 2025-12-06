@@ -31,14 +31,6 @@
                     Riwayat Donor
                 </a>
             </div>
-
-            {{-- INFO ROW --}}
-            <div class="flex flex-wrap gap-4 text-xs md:text-sm text-slate-600">
-                <div>
-                    Golongan darah:
-                    <span class="font-semibold text-slate-900">{{ $golongan_darah ?? 'A' }}</span>
-                </div>
-            </div>
         </div>
 
         {{-- RIGHT SECTION (CARD) --}}
@@ -60,6 +52,28 @@
                             Aktif
                         </span>
                     </div>
+
+                    <div class="space-y-3 text-sm text-slate-600">
+                        <div class="flex items-center justify-between">
+                            <span>Permintaan menunggu</span>
+                            <span class="font-semibold text-amber-500">
+                                {{ $permintaan_menunggu ?? 0 }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Permintaan disetujui</span>
+                            <span class="font-semibold text-emerald-600">
+                                {{ $permintaan_disetujui ?? 0 }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Permintaan ditolak</span>
+                            <span class="font-semibold text-rose-500">
+                                {{ $permintaan_ditolak ?? 0 }}
+                            </span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

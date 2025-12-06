@@ -9,6 +9,27 @@ use Illuminate\Support\Facades\Auth;
 
 class PenerimaController extends Controller
 {
+
+    public function index()
+    {
+        $userId = Auth::id();
+
+        // hitung berdasarkan model PermohonanDarah
+        $permohonan_proses = PermohonanDarah::where('id_penerima', $userId)
+            ->where('status', 'menunggu')
+            ->count();
+
+        $permohonan_terkabul = PermohonanDarah::where('id_penerima', $userId)
+            ->where('status', 'acc')
+            ->count();
+
+        return view('penerima.dashboard', compact(
+            'permohonan_proses',
+            'permohonan_terkabul'
+        ));
+    }
+
+
     public function formPermohonan()
     {
         $hospitals = Hospital::all();
@@ -66,45 +87,43 @@ class PenerimaController extends Controller
         // =========================
         // SIMPAN PERUBAHAN PROFIL
         // =========================
-        public function updateProfile(Request $request)
+    public function updateProfile(Request $request)
     {
         $request->validate([
-            'name'   => 'required|string|max:255',
-            'usia'   => 'required|numeric',
-            'alamat' => 'required|string',
+            'name'           => 'required|string|max:255',
+            'usia'           => 'required|numeric',
+            'alamat'         => 'required|string',
             'golongan_darah' => 'required|string|in:A,B,AB,O',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // ✅ CEK APAKAH ADA PERUBAHAN
+        // Cek apakah ada perubahan
         if (
             $request->name == $user->name &&
             $request->usia == $user->usia &&
             $request->alamat == $user->alamat &&
             $request->golongan_darah == $user->golongan_darah
         ) {
-            // ✅ TETAP DI HALAMAN EDIT + TAMPILKAN PESAN
             return redirect()
                 ->route('penerima.profile.edit')
                 ->withInput()
                 ->with('warning', 'Tidak ada perubahan yang disimpan.');
         }
 
-        // ✅ JIKA ADA PERUBAHAN → UPDATE
+        // Update jika ada perubahan
         $user->update([
-            'name'   => $request->name,
-            'usia'   => $request->usia,
-            'alamat' => $request->alamat,
+            'name'           => $request->name,
+            'usia'           => $request->usia,
+            'alamat'         => $request->alamat,
             'golongan_darah' => $request->golongan_darah,
         ]);
 
-        // ✅ JIKA BERHASIL → PINDAH KE PROFIL
         return redirect()
             ->route('penerima.profile')
             ->with('success', 'Profil berhasil diperbarui');
     }
-
 }
 
 
