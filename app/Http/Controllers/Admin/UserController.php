@@ -58,21 +58,28 @@ class UserController extends Controller
     public function pendonorStore(Request $request)
     {
         $request->validate([
-            'name'     => 'required',
-            'email'    => 'required|unique:users',
-            'password' => 'required|min:6'
+            'name'          => 'required',
+            'email'         => 'required|email|unique:users',
+            'password'      => 'required|min:6',
+            'usia'          => 'required|integer|min:17',
+            'alamat'        => 'required',
+            'golongan_darah'=> 'required',
         ]);
 
         User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'role'     => 'pendonor',
-            'password' => Hash::make($request->password)
+            'name'           => $request->name,
+            'email'          => $request->email,
+            'role'           => 'pendonor',
+            'password'       => Hash::make($request->password),
+            'usia'           => $request->usia,
+            'alamat'         => $request->alamat,
+            'golongan_darah' => $request->golongan_darah,
         ]);
 
         return redirect()->route('admin.pendonor.index')
-                         ->with('success', 'Pendonor berhasil ditambahkan');
+                        ->with('success', 'Pendonor berhasil ditambahkan');
     }
+
 
     // FORM EDIT PENDONOR
     public function pendonorEdit($id)
@@ -87,18 +94,32 @@ class UserController extends Controller
         $pendonor = User::findOrFail($id);
 
         $request->validate([
-            'name'  => 'required',
-            'email' => "required|unique:users,email,$id",
+            'name'           => 'required',
+            'email'          => "required|email|unique:users,email,$id",
+            'usia'           => 'required|integer|min:17',
+            'alamat'         => 'required',
+            'golongan_darah' => 'required',
         ]);
 
-        $pendonor->update([
-            'name'  => $request->name,
-            'email' => $request->email,
-        ]);
+        $data = [
+            'name'           => $request->name,
+            'email'          => $request->email,
+            'usia'           => $request->usia,
+            'alamat'         => $request->alamat,
+            'golongan_darah' => $request->golongan_darah,
+        ];
+
+        // password opsional saat edit
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $pendonor->update($data);
 
         return redirect()->route('admin.pendonor.index')
-                         ->with('success', 'Pendonor berhasil diperbarui');
+                        ->with('success', 'Pendonor berhasil diperbarui');
     }
+
 
     // HAPUS PENDONOR
     public function pendonorDestroy($id)

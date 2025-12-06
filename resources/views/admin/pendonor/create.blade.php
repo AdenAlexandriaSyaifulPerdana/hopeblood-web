@@ -9,26 +9,49 @@
 
     <form action="{{ route('admin.pendonor.store') }}" method="POST" class="space-y-5">
         @csrf
-
         <div>
             <label class="block mb-1 text-sm font-semibold text-slate-700">Nama</label>
             <input type="text" name="name"
-                   class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
-                   required>
+                class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                required>
         </div>
 
         <div>
             <label class="block mb-1 text-sm font-semibold text-slate-700">Email</label>
             <input type="email" name="email"
-                   class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
-                   required>
+                class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                required>
         </div>
 
         <div>
             <label class="block mb-1 text-sm font-semibold text-slate-700">Password</label>
             <input type="password" name="password"
-                   class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
-                   required>
+                class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                required>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block mb-1 text-sm font-semibold text-slate-700">Usia</label>
+                <input type="number" name="usia"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                    required>
+            </div>
+
+            <div>
+                <label class="block mb-1 text-sm font-semibold text-slate-700">Golongan Darah</label>
+                <input type="text" name="golongan_darah"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                    placeholder="A, B, AB, O"
+                    required>
+            </div>
+        </div>
+
+        <div>
+            <label class="block mb-1 text-sm font-semibold text-slate-700">Alamat</label>
+            <textarea name="alamat" rows="3"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
+                    required></textarea>
         </div>
 
         <div class="flex items-center gap-3 pt-2">
@@ -37,10 +60,11 @@
                 Simpan
             </button>
             <a href="{{ route('admin.pendonor.index') }}"
-               class="text-sm text-slate-500 hover:text-slate-700">
+            class="text-sm text-slate-500 hover:text-slate-700">
                 Batal dan kembali
             </a>
         </div>
+
     </form>
 </div>
 @endsection
